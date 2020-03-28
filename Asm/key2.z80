@@ -1,0 +1,91 @@
+; =============================
+; COMPILED WITH SquirrelBox 1.6 alpha 6
+; =============================
+
+.nolist
+#include "ti83plus.inc"
+.list
+.ORG userMem-2
+ .DB t2ByteTok,tAsmCmp
+
+
+func_main:
+ADSMBLG_Lbl_main_start:
+ CALL func_clrHome
+ LD A,2
+ LD (CurCol),A
+ADSMBLG_Lbl_main_top:
+ CALL func_getKey
+ LD A,(local_vars+0)
+ LD (local_vars+2),A
+ LD A,(local_vars+2)
+ CP 0
+ JP Z,ADSMBLG_Lbl_main_top
+ LD HL,(local_vars+2)
+ LD (local_vars+0),HL
+ CALL func_printNum
+ LD A,(CurCol)
+ SUB 5
+ LD (CurCol),A
+ LD A,(local_vars+2)
+ LD (local_vars+0),A
+ CALL func_printChar
+ LD A,61
+ LD (local_vars+0),A
+ CALL func_putChar
+ LD A,(CurCol)
+ ADD A,6
+ LD (CurCol),A
+                ; <IF>
+ LD A,(CurCol)
+ CP 10
+ JP C,ADSMBLG_1
+ JP Z,ADSMBLG_1
+ CALL func_println
+ LD A,2
+ LD (CurCol),A
+ADSMBLG_1:      ; <End IF>
+ LD A,(local_vars+2)
+ CP 9
+ JP NZ,ADSMBLG_Lbl_main_top
+ LD A,(CurRow)
+ CP 0
+ JP NZ,ADSMBLG_Lbl_main_start
+ LD A,(CurCol)
+ CP 2
+ JP Z,ADSMBLG_Lbl_main_start
+ RET
+
+func_putChar:
+ LD A, (local_vars+0)
+ B_CALL(_PutMap)
+ RET
+
+func_printChar:
+ LD A, (local_vars+0)
+ B_CALL(_PutC)
+ RET
+
+func_printNum:
+ LD HL, (local_vars+0)
+ B_CALL(_DispHL)
+ RET
+
+func_println:
+ B_CALL(_NewLine)
+ RET
+
+func_getKey:
+ B_CALL(_GetKey)
+ LD ((local_vars+0)), A
+ RET
+
+func_clrHome:
+ B_CALL(_ClrScrnFull)
+ B_CALL(_HomeUp)
+ RET
+
+local_vars:
+ .DB 0,0,0
+.END
+.END

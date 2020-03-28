@@ -1,0 +1,342 @@
+Last modified: 13 May 2005
+
+============
+4. Functions
+============
+
+  +----------------------+
+  | Modularized programs |
+  +----------------------+
+
+   In "1. Getting Started.txt" I explained that Antidisassemblage is a modular
+   programming language and that Antidisassemblage modules are called functions,
+   so if you need an explaination for functions, there it is. Here is an exmaple
+   program that with some functions other than main:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte value = 1;
+   |byte[14] message = {"Sum 0->? =\0"}; // '\0' is the null character whose
+   |                                     // value is zero, so this comes out
+   |void clear() {                       // the same as {"Sum 0->? =",0} does
+   |   .HomeUp();
+   |   .ClrHome();
+   |}
+   |
+   |void summation() {
+   |    byte index, sum = 0;
+   |    for(index, 1, value) {
+   |        sum = sum + index;
+   |    }
+   |    message[7] = '0' + value;
+   |    .DispS(message);
+   |    .DispByte(sum);
+   |    .NewLine();
+   |}
+   |
+   |void main() {
+   |    clear();
+   |    summation();
+   |    value = 3;
+   |    summation();
+   |    value = 7;
+   |    summation();
+   |    value = 4;
+   |    summation();
+   |    value = 6;
+   |    summation();
+   |}
+
+   TI83+ Runtime Output:
+
+   |Sum 0->1 =    1
+   |Sum 0->3 =    6
+   |Sum 0->7 =   28
+   |Sum 0->4 =   10
+   |Sum 0->6 =   21
+   |            Done
+
+   As you can see, you can call any function by name, and it does what it does
+   (do not forget to put the parenthesis after the name when you call them; the
+   reason for this is explained further down). The clear function resets the
+   home screen cursor and clears the screen, but since it was only used once, it
+   would have been more efficient to just put those commands right in the main
+   function. The summation function prints out a value that is the sum of all
+   the integer values from zero to the value of "value". In this case it was a
+   very good idea to put all that in a separate function because it was called
+   many times AND it has a good deal of code in it (putting all of that code in
+   the main function five times would be an unneccessary waste of space & code).
+
+   NOTE: Functions must be declared before they are used, which means that you
+   cannot call one function from another function that was delcared before the
+   function that it is calling, which is why the main function was declared last.
+
+   The summation is found by looping from zero to value to add up all of those
+   values into the sum variable. Notice that sum and index are local variables;
+   this is the first time that I have shown any example programs with local
+   variables. In this case it would not be any better for those variables to be
+   global, because their values are assigned new values whenever the summation
+   function is called (also, if there were other functions with their own local
+   variables, they would probably be able to overlap eachother in memory which
+   would actually save a little more space in the compiled program).
+
+   One way that the output message of the summation could have been handled is
+   to have separate variables for each string; but the output comes from the
+   summation function itself (which is nice because then you do not have to
+   manually output the message each time; you should have a function do every-
+   thing that would normally happen when it is called, so that those things do
+   not have to be redone for each call), there had to be some dynamic way to
+   adjust the output message for any value. This is done by changing the char
+   where the number is supposed to appear to the right value. Since the char
+   value for each digit is not the same value as the digit, I determined the
+   right character value by adding the value to the '0' character. This works
+   because the values of the digit characters are in the obvious order. The
+   reason that '?' is initially stored in that place is because the value that
+   starts there will be changed every time the function is called anyways.
+
+   I know there are some smart people who would say that there is already an
+   arrow character on the TI-83+, but since it is hard to determine what that
+   character would be on my computer (I do not know the value), I just used
+    "->" instead (hey, maybe somebody should make an include file that defines
+   character values for each platform, i.e. #define "STORE_TO_ARROW" as "28").
+
+  +-----------------------+
+  | Passing and returning |
+  +-----------------------+
+
+   Usually, a function needs to be given information to know how to operate.
+   For example, the result of the summation function in that last example
+   depends on the value of byte value. This method of checking a global for a
+   value to use is okay in some cases (like when the function is only used in
+   one place or for one thing), but functions that require information to do
+   something usually take values in the form of arguments (or "parameters").
+
+   The arguments (or parameters, same thing) that a function takes are listed
+   in parenthesis after the function name and look like variable declarations.
+   None of the functions in my examples so far had any arguments, so there was
+   nothing in the parenthesis (requiring parenthesis after the function name
+   was just another matter of my preference). Generally, the example program
+   used before would be written like this in something like C++ or Java:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte[11] message = {"Sum 0->? =\0"};
+   |
+   |void clear() {
+   |   .HomeUp();
+   |   .ClrHome();
+   |}
+   |
+   |void summation(byte value) {
+   |    byte index, sum = 0;
+   |    for(index, 1, value) {
+   |        sum = sum + index;
+   |    }
+   |    message[7] = '0' + value;
+   |    .DispS(message);
+   |    .DispByte(sum);
+   |    .NewLine();
+   |}
+   |
+   |void main() {  // remember that program execution starts in function main
+   |    clear();
+   |    summation(1);
+   |    summation(3);
+   |    summation(7);
+   |    summation(4);
+   |    summation(6);
+   |}
+
+   TI83+ Runtime Output:
+
+   |Sum 0->1 =    1
+   |Sum 0->3 =    6
+   |Sum 0->7 =   28
+   |Sum 0->4 =   10
+   |Sum 0->6 =   21
+   |            Done
+   
+   Note that the only change made in the summation function was that byte value
+   was delcared as one of its arguments. This also simplifies that code in the
+   main function because it does not have to assign a value and then make the
+   call to summation(), it only has to call summation and pass the value. The
+   arguments of a function are local variables. When a function is called, the
+   passed values are all assigned to the addresses of the corresponding arguments.
+
+   The summation function included the code for printing out the value of each
+   summation because it was needed each time; but programs can have functions
+   that are used in different places and for different purposes, so sometimes it
+   is a good idea to have a function return a value so that anything that calls
+   the function can do whatever it wants with that value. For example, you could
+   stick a bunch of math functions in ong big include file to and use it like so:
+
+   "math.ads":
+
+   |byte summation(byte value) {
+   |    this = 0;
+   |    byte index;
+   |    for(byte index, 1, value)
+   |        this = this + index;
+   |}
+   |... //pretend that there are more math functions listed after this one
+
+   some *.ads file:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |#include "math.ads"
+   |
+   |byte[11] message = {"Sum 0->9 =\0"};
+   |
+   |void main() {
+   |    .HomeUp()
+   |    .ClrHome();
+   |    .DispS(message);
+   |    byte sum = summation();
+   |    .DispByte(sum);
+   |}
+
+   Return values work a little differently in Antidisassemblage than they do
+   in most languages like C++ or Java. Since values are passed and returned
+   by address instead of the stack, the return value of functions that have
+   one is a local variable called "this" (the "this" keyword is reserved just
+   for this purpose). When a function "returns a value", it simply returns, and
+   the return value is whatever it is at that time. The "void" is used to mean
+   that a function does not return a value (does "void main()" make sense now?).
+
+   Note: I know that "this" is used in other languages to refer to the current
+   instance of some object, but I do not intend on adding all out C++ or Java
+   style "classes" to the language; at the most I might add something similar
+   to the C/C++ "struct" but WITHOUT constructors or other "member functions".
+
+   One drawback of using this method to return values (combined with the fact
+   that all variables have a fixed address) is that it makes recursive algor-
+   ithms nearly impossible or at least really difficult. For example, here is
+   a function that finds summations recursively:
+
+   |byte summation(byte value) {
+   |    if(value < 2) {
+   |        this = value;   // right here <------------------------------------.
+   |        return;         //                                                 |
+   |    }
+   |    summation(value-1); // do not need "this =" since it is done in the call
+   |    this = this + value;
+   |}
+
+   In theory, it should work like this: summation( anything less than 2 ) is
+   whatever value you give it, summation(2) is summation(1)+2 is 1+2 is 3,
+   summation(3) is summation(2)+3 is 3+3 is 6, and so on, but if you "debug"
+   the process, here is what happens when you call factorial(3):
+
+                         |  Adsmblg  || In theory
+   program flow          |value|this ||value|this
+   ----------------------+-----+-----++-----+-----
+   call summation(3)     | 3   | ?   || 3   | ?
+     call summation(2)   |  2  |  ?  ||  2  |  ?
+       call summation(1) |   1 |   ? ||   1 |   ?
+       this = value      |   1 |   1 ||   1 |   1
+    (this = summation(1))|  1  |  1  ||  2  |  1
+     this = this+value   |  1  |  2  ||  2  |  3
+  (this = summation(2))  | 1   | 2   || 3   | 3
+   this = this+value     | 1   | 3   || 3   | 6
+
+   The only real way to get around this is to use the stack (no macros for that
+   yet) or simulate a stack with an array and an index variable or something.
+
+   Values can be passed directly to the return variable of a function by simply
+   calling an argument "this". For example:
+
+   |byte plus5(this) {
+   |    this = this + 5;
+   |}
+
+   (I know that that is a stupid function to have, but it's late and I just want
+   to get this done). What that means is that the first (and only) argument of
+   plus5 is the same variable as the return variable (or the first value you pass
+   is assigned directly to the return variable of plus 5). Note that there is no
+   datatype given for a "this" argument because it already uses the return-type.
+   The other way to make a function that does the same thing would be to have it
+   take a value and assign that value + 5 to "this", but that requires an extra
+   byte for the argument. Note: "&this" is also a valid argument, which simply
+   means to assign the address of whatever is passed into "this" (see the next
+   section on Indirection).
+
+  +------------------+
+  | Function headers |
+  +------------------+
+
+   A function must be declared before it is used, but the body of a function does
+   not. A function header is a function declaration that does not have a body (the
+   part that contains all of its code between "{...}" or "begin...end") and has a
+   semicolon after it to denote that the function body is declared later. This is
+   very important because declaring function headers insures that those functions
+   will be usable no matter where they are declared. The body of a function header
+   is declared as a normal function with the same name and arguments/parameters as
+   the function header. For example, the summation program used before could have
+   been declared like so:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte[14] message = {"Sum of 0->? =\0"};
+   |
+   |void clear();
+   |void summation(byte value);
+   |
+   |void main() {
+   |    clear();
+   |    summation(1);
+   |    summation(3);
+   |    summation(7);
+   |    summation(4);
+   |    summation(6);
+   |}
+   |
+   |void clear() {
+   |   .HomeUp();
+   |   .ClrHome();
+   |}
+   |
+   |void summation(byte value) {
+   |    byte index, sum = 0;
+   |    for(index, 1, value) {
+   |        sum = sum + index;
+   |    }
+   |    message[11] = '0' + value;
+   |    .DispS(message);
+   |    .DispByte(sum);
+   |    .NewLine();
+   |}
+
+   This time I put the main function first (but after those function headers) and
+   it is still valid for main to call those functions because the compiler knows
+   that they exist and how to use them. Function headers also make it possible to
+   do stuff like this:
+
+   |void function1();
+   |void function2();
+   |
+   |void function1() { function2(); }
+   |void function2() { function1(); }
+
+   Note: There must be a function body somewhere after each corresponding function
+   header (that shuold be obvious). The arguments in a function must match the ones
+   in the header exactly (type, name, and optional addressing). Some more exmaples:
+
+   |void blah(byte p, word q, byte[5] r);
+   |void moo(word a, byte b);
+   |void moose(byte x, byte y, byte z);
+   |
+   |void blah(byte p, word q, byte[5] r) {
+   |    // function code goes here
+   |}
+   |
+   |void moo(word a, byte b) {
+   |    // function code goes here
+   |}
+   |
+   |void moose(byte x, byte y, byte z) {
+   |    // function code goes here
+   |}

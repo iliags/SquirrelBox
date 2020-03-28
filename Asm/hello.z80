@@ -1,0 +1,40 @@
+; =============================
+; COMPILED WITH SquirrelBox 1.6 alpha 6
+; =============================
+
+.nolist
+#include "ti83plus.inc"
+.list
+.ORG userMem-2
+ .DB t2ByteTok,tAsmCmp
+
+
+func_main:
+ CALL func_clrHome
+ LD HL,ADSMBLG_Lit_0
+ LD (local_vars+0),HL
+ CALL func_printStr
+ CALL func_println
+ RET
+
+func_printStr:
+ LD HL, (local_vars+0)
+ B_CALL(_PutS)
+ RET
+
+func_println:
+ B_CALL(_NewLine)
+ RET
+
+func_clrHome:
+ B_CALL(_ClrScrnFull)
+ B_CALL(_HomeUp)
+ RET
+
+ADSMBLG_Lit_0:
+ .DB "Hello World!",0
+
+local_vars:
+ .DB 0,0
+.END
+.END

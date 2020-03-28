@@ -1,0 +1,201 @@
+Last Updated: 04 Oct 2008
+Dan Cook, shkaboinka@gmail.com
+http://groups.google.com/group/ADSMBLG/
+
+
+.----------------------------.
+|\||||||||||||||||||||||||||/|
+|-+------------------------+-|
+|-| 1.1 - A Simple Program |-|
+|-+------------------------+-|
+|/||||||||||||||||||||||||||\|
+'----------------------------'
+
+
+This is what a standard "Hello World!" Antidisassemblage program looks like:
+
+==--==================================
+01  /* HelloWorld.ads
+02   *
+03   * Clears the home screen and then
+04   * prints the words "Hello World!"
+05   *
+06   */
+07
+08  #define TI83_PLUS
+09  #include "tios.ads"
+10
+11  void main() {
+12      clrHome();
+13      printStr("Hello World!");
+14      println();
+15  }
+==--==================================
+
+The hoizontal bars and the line numbers (as well as the extra spaces after
+each) are not actually part of the program. They are only there to make it
+easier to refer to example code and to distinguish it from the other text.
+This convention is used throughout these tutorials.
+
+Save the above code in a file called "HelloWorld.ads" (omitting the bars and
+line numbers). This can be done either through SquirrelBox or using a text
+file editor (i.e. Notepad for Windows users), and then compile the source
+code using the SquirrelBox compiler (see the SquirrelBox README file for more
+information on using SquirrelBox).
+
+When executed on a TI83+, the above program creates the following output:
+
+.----------------.
+|Hello World!    |
+|            Done|
+|                |
+|                |
+|                |
+|                |
+|                |
+|                |
+'----------------'
+
+(The TI-83+ automatically displays the "Done" indicator after it finishes
+running a program). Try changing the "Hello World!" text to something else
+and run the program again to get a feel for it.
+
+
+.----------------------------------.
+|\||||||||||||||||||||||||||||||||/|
+|-+------------------------------+-|
+|-| 1.2 - The Parts of a Program |-|
+|-+------------------------------+-|
+|/||||||||||||||||||||||||||||||||\|
+'----------------------------------'
+
+
+The sample program above can be broken down into four basic parts: comments,
+compiler directives, the main function, and statements. Please note that a
+couple of the concepts that are to be discussed may be tough to grasp at this
+point if you are just starting out, but do not require a full understanding
+until later (if at all).
+
+Comments essentially tell the compiler: "IGNORE THIS PART OF MY CODE". These
+-------- are useful for leaving notes throughout code about various aspects
+of a program (this is why they are called comments). Antidisassemblage offers
+two forms of comments. The first begins with a slash-slash // and "comments
+out" everything after the double-slash on the same line. The second starts
+with a "slash-star" /* and continues, even down multiple lines of code, until
+a "star-slash" */ is found. Lines 1-6 in the sample code above are comments.
+Here is another example:
+
+==--=========================
+00  // This is a comment
+01
+02  This is NOT a comment // But this is
+03
+04  /* This is a comment
+05     that includes three
+06     whole lines of code */
+==--=========================
+
+Compiler directives are direct commands to the compiler to do various things.
+------------------- These are sometimes called preprocessor commands because
+the preprocessor is the part of a compiler that processes such commands (and
+this is done before anything else).
+
+The #define directive on line 8 of the sample program tells the compiler which
+platform the source code is intendid for. The syntax for choosing a platform
+is "#define PLATFORM" where "PLATFORM" can be any one of the following values:
+TI82, TI83, TI83_PLUS, TI83_PLUS_SE, TI_84_PLUS, TI_84_PLUS_SE, TI85, TI86.
+Each applies to a corresponding model of TI Graphing Calculator. There is also
+a GENERAL_Z80 value to use for platforms other than the ones mentioned.
+
+An antidisassemblage program can target for multiple platforms at once -- a
+nice alternative to recoding the same program for each. Multiple platforms
+can be defined with multiple #define commands, or by listing each in a single
+statement like so: #define TI82, TI83, TI83_PLUS, TI85, TI86
+
+.-------------------------------------------------------.
+| AN IMPORTANT NOTE ABOUT THE TI83+ AND TI84+ PLATFORMS |
+|-------------------------------------------------------'-----------------.
+|The TI83+ and the TI83+ Silver Edition are essentially the same system,  |
+|but with minor differences that make the Silver Edition more advanced in |
+|certain respects. Therefore, the TI83_PLUS value applies BOTH PLATFORMS. |
+|The TI83_PLUS_SE value should ONLY be used when a distinction between the|
+|two is important. This is also true regarding the TI84+ and the TI84+SE. |
+|Further more, as the TI84+ is roughly an extension of the TI83+, the     |
+|TI83_PLUS value also applies to the TI84+ and the TI84+SE, and likewise  |
+|the TI83_PLUS_SE value also applies to the TI84+SE                       |
+'-------------------------------------------------------------------------'
+
+The #include directive tells the compiler to include code from another file
+(in the case of our example program, a file named "tios.ads"). This means that
+snippets of code can be used again and again without have to be recoded. The
+tios.ads file referenced above contains instructions that tell the compiler
+how to format a program properly to work with the TI-OS on each standard model
+(like the TI83+). It also contains functions that utilize the convenient
+text operations built into the TI-OS. As workings of such things goes beyond
+the level of discussion in this section, it is a major convience that they can
+be packed away in a separate file where one does not see even understand how
+all that really works before being able to use its features.
+
+The main function is where all the instructions that make up your program go.
+----------------- Further discussion on functions in section 4 will explain
+the meaning of "void" and the parentheses; but for now just remember that The
+main function is always written like this (note the use of a comment):
+
+==--=======================
+00  void main() {
+01      // Insert code here
+02  }
+==--=======================
+
+A statement is basically one instruction in a program. There are only three
+----------- statements in the main function, which tell the program TI83+ to
+"clear the home screen," "print Hello World!," and "move down one line."
+Here they are again (and note the comments):
+
+==--========================================================
+11  void main() {
+12      clrHome();   // Clear the home screen
+13      printStr("Hello World!"); // Print "Hello World!"
+14      println();   // Start a new line of text (move down)
+15  }
+==--========================================================
+
+The clrHome, printStr, and println commands are functions that are coded
+within the "tios.ads" file. They function as already explained above.
+
+It is important to note that every statement in an antidisassemblage program
+must end with a semicolon ';'. It is NOT the positioning of each statement,
+but the semicolon that tells the compiler where one statement begins and the
+other ends. In fact, all of that "white space" (spaces, tabs, newlines) means
+absolutely nothing to the compiler. This important distinction provides a lot
+of flexibility of style. For example, our sample program could just as easily
+have been coded like this (removing the comments, by the way):
+
+==--=====================================
+01  #define TI83_PLUS #include
+02  "tios.ads"void main(){clrHome();
+03  printStr("Hello World!");println();}
+==--=====================================
+
+The only difference is that this program is MUCH harder to read. The general
+rule is to tab everything over one unit (1 tab or 4 spaces is typical) per
+enclosing context of a statement (i.e. the main function). An alternate style
+also common in Java and C++ (as is the first) as like so:
+
+==--==================================
+01  /* HelloWorld.ads
+03
+04     Clears the home screen and then
+05     prints the words "Hello World!"
+06  */
+07
+08  #define TI83_PLUS
+09  #include "tios.ads"
+10
+11  void main ( )
+12  {
+13      clrHome ( );
+14      printStr ( "Hello World!" );
+15      println ( );
+16  }
+==--==================================

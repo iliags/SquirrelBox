@@ -1,0 +1,98 @@
+Integrate && || operators and their "and" "or" counterparts (MUST)
+
+Integrate * / % operators (insert default routines for them) (MUST)
+
+Make values work with recursion automatically via the stack (MUST)
+
+Store variables within instructions (saves more space than share
+addresses) (REALLY SHOULD, efficiency)
+
+Assembly output optimizations (REALLY SHOULD, efficiency)
+
+Keyword to keep unused functions rather than removing them
+automatically (SHOULD, technicality)
+
+------------------------------
+NEW METHOD OF VARIABLE STORAGE:
+------------------------------
+
+    Where possible, variables will be stored WITHIN the assembly instructions
+    that use them ("code mutation"). Most word values should even do fine, but
+    arrays will have to be stored like they are now. As for local arrays, it
+    may be more efficient designate areas of "safe ram" rather than allocating
+    them in the program itself. For that to work though, the compiler will need
+    to make assumptions or require some way for the user to define where that
+    is (if not defined, then store in program).
+
+    var_1 = $+1
+        LD A,0 ; <-- initial value if var_1 is a global
+
+-----------------------------
+ASSEMBLY OUTPUT OPTIMIZATIONS:
+-----------------------------
+
+    Sort through series of LD operations and chart out what is getting put where,
+    and then rewrite it the most efficient way. Use "(HL)" instead of "A" whenever
+    possible. Here are some more optimizations:
+
+    .---------------.----------------.
+    | ORIGINAL CODE | OPTIMIZED CODE |  * X and Y represent any numeric values
+    +===============+================+
+    | LD A,0        | XOR A          |  * MN and PQ represent any registers / pairs
+    +---------------+----------------+
+    | CP 0          | OR A           |  * The order that these are in matters, some
+    +---------------+----------------+    of these instructions are already changed
+    | SCF           | OR A           |    according to previous rules and might not
+    | CCF           |                |    regularly occur otherwise.
+    +---------------+----------------+
+    | RET Z         | JP NZ          |
+    | JP label      | RET            |
+    +---------------+----------------+
+    | LD M,$XX      | LD MN,$XXYY    |
+    | LD N,$YY      |                |
+    +---------------+----------------+
+    | XOR A         | XOR A          |
+    | LD MN,0       | LD M,A         |
+    |               | LD N,A         |
+    +---------------+----------------+
+    | OR A ;reset c | LD MN,-X       |
+    | LD MN,X       | ADD HL,MN      |
+    | SBC HL,MN     |                |
+    +---------------+----------------+
+    | INC A         | ADD A,2 ;etc.  |
+    | INC A         |                |
+    +---------------+----------------+
+    | ADD 1         | INC A          |
+    +---------------+----------------+
+    | SUB 1         | DEC A          |
+    +---------------+----------------+
+    | POP MN        | POP PQ         | <-- This is assuming that we are trying get
+    | LD P,M        |                |     the value from the stack to DE and that
+    | LD Q,N        |                |     BC does not need the value at all. CAREFUL!
+    +---------------+----------------+
+    | LD A,M        | INC M          |
+    | OR A          | DEC M          |
+    +---------------+----------------+
+    | DEC B         | DJNZ label     | <-- A long shot for this to occur randomly
+    | JP NZ,label   |                |     (possibly from the above optimization)
+    +---------------+----------------+
+    | CALL func     | JP func        |
+    | RET           |                |
+    +---------------+----------------+
+    | JP label      | ; NOTHING!     | <-- Can result from the above optimization
+    |label:         |                |
+    +---------------+----------------+
+    | LD A,M        | XOR A          |
+    | NEG           | SUB M          |
+    +---------------+----------------+
+    | LD A,(X)      | LD HL,X        |
+    | INC A         | INC (HL)       |
+    | LD (X),A      |                |
+    +---------------+----------------+
+    | LD A,(X)      | LD HL,X        |
+    | DEC A         | DEC (HL)       |
+    | LD (X),A      |                |
+    +---------------+----------------+
+    | LD ?,!        | LD ?,!         | <-- ? and ! are anything at all
+    | LD !,?        |                |
+    '---------------'----------------'

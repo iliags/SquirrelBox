@@ -1,0 +1,50 @@
+Last Updated: 28 Sep 2008
+Dan Cook, shkaboinka@gmail.com
+http://groups.google.com/group/ADSMBLG/
+
+.--------------------.
+| 5.1 - Using Arrays |
+'--------------------'
+
+Introduce arrays and how they are useful. Show how to index them. Show how string values
+can be used within arrays. Explain array & string literals and how they relate. Explain
+how literals are just global variables referred to by their content (a convenience), and
+show how an array can be used in place of a string literal (like they used to have to be).
+Explain how arrays are NOT distinguished as arrays, and one cannot assign or pass one
+array to another. Explain that allowing such is inefficient and there is only one proper
+way to handle arrays dynamically (a perfect lead into referencing).
+
+
+.--------------------------------.
+| 5.2 - Addresses and References |
+'--------------------------------'
+
+Explain the address operator and how one can use the address of a variable, literal, or
+function name as a value this way. Explain the dereferencing operator and how to use
+"pointers" manually. There are no "pointer variables", but the referencing is there!
+Demonstrate that array indexing is a work of such referencing and how to do it manually.
+Point out that technically you can reference any given number and use it as a variable,
+since a variable is just a reference to a given address. Briefly explain the option of
+specifying an address for a variable (byte a @ "address").
+
+.-------------------------.
+| 5.3 - Forcing Reference |
+'-------------------------'
+
+Reiterate the idea of passing addresses as references to functions and macros and how
+this allows dynamic indirect access to strings and such. Explain how to hide the '&'
+operator in functions (and only MENTION that macros do this too) in order to "force"
+a reference and effectively "pass by reference." Use a function to store a value to
+a reference without returning a value (use a tuple?)
+
+
+.-------------------------.
+| 5.4 - Referenced Arrays |
+'-------------------------'
+
+Tie everything in this section together by showing how passing arrays by reference
+is the ONLY [good] way to deal with arrays dnyamically, and show a function that does
+something very dynamic to an array of any given size (sort, search). Solidify the
+association of strings as special arrays by using such an array manipulating function
+to perform a very reasonable string operation (i.e. search, copy). Also show how
+it may be beneficial to assign the address of an array to some system array or string.

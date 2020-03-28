@@ -1,0 +1,72 @@
+Last Updated: 28 Sep 2008
+Dan Cook, shkaboinka@gmail.com
+http://groups.google.com/group/ADSMBLG/
+
+.-------------------------------.
+|\|||||||||||||||||||||||||||||/|
+|-+---------------------------+-|
+|-| 4.1 - Modular Programming |-|
+|-+---------------------------+-|
+|/|||||||||||||||||||||||||||||\|
+'-------------------------------'
+
+Introduce the concept of other functions and make the concept of the "MAIN function"
+clear. Use a couple functions to do something very definable as one task, but DO NOT
+PASS OR RETURN ANY VALUES. JUST emphasize modularization of processes and the
+efficiency of being able to call a task again and again without recoding it. Note that
+the functions MUST be defined "before" they can be used.
+
+
+.-------------------------------------.
+|\|||||||||||||||||||||||||||||||||||/|
+|-+---------------------------------+-|
+|-| 4.2 - Local vs Global Variables |-|
+|-+---------------------------------+-|
+|/|||||||||||||||||||||||||||||||||||\|
+'-------------------------------------'
+
+Introduce global variables and why they are beneficial and when to use them. Relate
+that the more local variables one uses though, the better the output code becomes.
+This is a GREAT place to lead into the concept of passed values, which are local vars.
+
+
+.----------------------------------------.
+|\||||||||||||||||||||||||||||||||||||||/|
+|-+------------------------------------+-|
+|-| 4.3 - Passing and Returning Values |-|
+|-+------------------------------------+-|
+|/||||||||||||||||||||||||||||||||||||||\|
+'----------------------------------------'
+
+Explain one, then the other. Show how passing values is a way around messy global vars.
+Explain the nature of the "this" syntax of assigning return values, and for using one
+of the arguments as the return value.
+
+
+.----------------------------.
+|\||||||||||||||||||||||||||/|
+|-+------------------------+-|
+|-| 4.4 - Function Headers |-|
+|-+------------------------+-|
+|/||||||||||||||||||||||||||\|
+'----------------------------'
+
+Explain the need for function headers and show an example. I don't like them though,
+and they can usually be avoided.  Though they can also be a nice way to list what there
+is and is probably a good habit anyway.
+
+
+.---------------------.
+|\|||||||||||||||||||/|
+|-+-----------------+-|
+|-| 4.5 - Recursion |-|
+|-+-----------------+-|
+|/|||||||||||||||||||\|
+'---------------------'
+
+Explain some simple recursion with a simple example. Explain how each instance of a
+function call does NOT interfere with it's own variables (the compiler will do this
+automatically by using the stack. Perhaps mention the stack, but do not explain the
+concept of a stack if it is a new concept). Explain and show how it can be not only
+more efficient, but neccessary in many cases. POSSIBLY explain how to debug or trace
+out how a recursive function would play out. Talk about base-cases for sure though.

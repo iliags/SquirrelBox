@@ -1,0 +1,178 @@
+Last Updated: 04 Oct 2008
+Dan Cook, shkaboinka@gmail.com
+http://groups.google.com/group/ADSMBLG/
+
+
+.-------------------------------------------------.
+|\|||||||||||||||||||||||||||||||||||||||||||||||/|
+|-+---------------------------------------------+-|
+|-| 0.! - IMPORTANT NOTES ABOUT THESE TUTORIALS |-|
+|-+---------------------------------------------+-|
+|/|||||||||||||||||||||||||||||||||||||||||||||||\|
+'-------------------------------------------------'
+
+
+These tutorials are built on the assumption that the TI83+
+is the target platform, but can also be applied to all other
+z80 platforms: TI82, TI83, TI84+, TI86, or even a GameBoy.
+Though the example code given often involves things that
+differ from platform to platform (i.e. how each displays
+text on a screen), the main focus is on aspects that are
+fundamental to Antidisassemblage regardless of platform.
+
+Antidisassemblage programming is done on a computer and NOT
+on the target platform. Getting programs from your computer
+to a graphing calculator requires a link cable and linking
+software, which are not provided with SquirrelBox (the sole
+compiler for Antidisassemblage).
+
+A detailed explaination for using the SquirrelBox compiler
+is not given in these tutorials, but can be found in the
+README.TXT file that comes with SquirrelBox.
+
+These tutorials ONLY explain core features of the language.
+A bare minimum of external textual functions are referenced,
+but these are only explianed as needed because they are NOT
+part of the core language. The only Programming techniques
+explained are to help understand the use of certain features.
+
+The use, development, maintenance, and acquiring of various
+include files is outside the scope of these tutorials. It is
+the responsibility of the authors/coders of such to maintain
+their own work and offer whatever explainations they will.
+
+
+.-----------------------------.
+|\|||||||||||||||||||||||||||/|
+|-+-------------------------+-|
+|-| 0.0 - Table of Contents |-|
+|-+-------------------------+-|
+|/|||||||||||||||||||||||||||\|
+'-----------------------------'
+
+
+  -----------------------
+  Introduction & Contents
+  -----------------------
+    0.!  IMPORTANT NOTES
+    0.0  Table of Contents
+    0.1  The Antidisassemblage language
+    0.2  Requirements for use
+
+  --------------
+  Getting Stated
+  --------------
+    1.1  A Simple Program
+    1.2  The Parts of a Program
+
+  -----------------
+  Data Manipulation
+  -----------------
+    2.1  Using Variables
+    2.2  Expressions and Operators
+    2.3  Data Types & Values
+    2.4  Signed & Fractional values
+    2.5  Defining Constants
+    2.6  A Demonstration
+
+  ------------------
+  Control Constructs
+  ------------------
+    3.1  Program Flow
+    3.2  Conditional Execution
+    3.3  Looping
+    3.4  Scope
+
+  ---------
+  Functions
+  ---------
+    4.1  Modular Programming
+    4.2  Local vs Global Variables
+    4.3  Passing and Returning Values
+    4.4  Function Headers
+    4.5  Recursion
+
+  ---------------------
+  Arrays and References
+  ---------------------
+    5.1  Using Arrays
+    5.2  Addresses and References
+    5.3  Forcing a Reference
+    5.4  Referenced arrays
+
+  ----------------------
+  Expanding the Language
+  ----------------------
+    6.1  Using "Include Files"
+    6.2  Conditional Compilation
+    6.3  Inserting Assembly Code
+    6.4  Designing Macros
+    6.5  Combining Techniques
+
+
+.------------------------------------------------------.
+|\||||||||||||||||||||||||||||||||||||||||||||||||||||/|
+|-+--------------------------------------------------+-|
+|-| 0.1 - The Antidisassemblage Programming Language |-|
+|-+--------------------------------------------------+-|
+|/||||||||||||||||||||||||||||||||||||||||||||||||||||\|
+'------------------------------------------------------'
+
+
+Antidisassemblage is an extensible C/Java-like programming language
+for systems utilizing the z80 Processor, but targetted for TI Graphing
+Calculators (TI82, TI83, TI83+, TI83+ SE, TI84+, TI84+ SE, TI85, TI86).
+
+Features include user-defined variables & functions, full expressions,
+a full set of program-flow control constructs (loops, ifs, gotos, etc),
+strings & arrays, and referencing (effectively like using "pointers").
+
+Extensibilty is provided through compiler directives for file inclusion,
+conditional compilation, user-defined macros (complex replacements), and
+inline assembly coding. This allows Antidisassemblage to be interfaced
+with Operating Systems, shells, and any other programs/tools on virtually
+any z80 platform (or graphing calculator model, as is the usual case).
+
+Antidisassemblage is a very low-level "high-level language". Developed
+with a VERY HEAVY focus on holding to assembly coding paradigms, it lacks
+floating-point values, signed variables, pointer variables, OO constructs
+(classes / "structs"), and imlicitly only handles 8-bit and 16-bit values.
+The result is an alternative to assembly coding, but without the MASSIVE
+overhead processing time (and space!) required for such a small processor
+to handle the complexities of a typical high-level language. This means
+much faster, smaller, and efficient programs.
+
+Antidisassemblage originated as an idea to convert near-"TI-BASIC" code
+into their assembly-program "equivalents," but then evolved into a more
+complex language with optional BASIC-like syntax. As the language became
+more complex and low-level, this option was ultimately removed in favor
+of simplicity.
+
+SquirrelBox is the sole compiler for Antidisassemblage, and therefore
+also THE defining of the language. SquirrelBox is a java program that
+compiles Antidisassemblage source code into assembly code, and can be
+interfaced with an assembler to compile the assembly code into actual
+programs / machine code. It comes with Tasm, which is an assembler for
+windows, but can work with any other assembler as mentioned.
+
+
+.----------------------------------------------------.
+|\||||||||||||||||||||||||||||||||||||||||||||||||||/|
+|-+------------------------------------------------+-|
+|-| 0.2 - Requirements for using Antidisassemblage |-|
+|-+------------------------------------------------+-|
+|/||||||||||||||||||||||||||||||||||||||||||||||||||\|
+'----------------------------------------------------'
+
+
+The SquirrelBox compiler is needed to compile Antidisassemblage source
+code into assembly code. SquirrelBox only requires the Java Runtime
+Environment (JRE), which can be downloaded at http://java.sun.com
+
+An assembly compiler is required to compile generated assembly code into
+a working program. SquirrelBox comes with Tasm (an assembler for Windows),
+but any assembly compiler will work. Find one at http://ticalc.org
+
+Other helpful resources include "include files" that define new features
+and these tutorials  -- both of which come with SquirrelBox. For more info,
+resources, or questions, visit http://groups.google.com/group/ADSMBLG

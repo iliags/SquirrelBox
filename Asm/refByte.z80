@@ -1,0 +1,116 @@
+; =============================
+; COMPILED WITH SquirrelBox 1.6 alpha 6
+; =============================
+
+.nolist
+#include "ti83plus.inc"
+.list
+.ORG userMem-2
+ .DB t2ByteTok,tAsmCmp
+
+
+func_main:
+ LD HL,global_d
+ LD A,L
+ LD (global_c),A
+ LD HL,global_c
+ LD A,L
+ LD (global_b),A
+ LD HL,global_b
+ LD A,L
+ LD (global_a),A
+ CALL func_clrHome
+ CALL func_show
+ LD A,38
+ LD (global_d),A
+ CALL func_show
+ LD HL,(global_c)
+ LD (HL),35
+ INC HL
+ LD (HL),0
+ CALL func_show
+ LD HL,(global_a)
+ LD A,(HL)
+ INC HL
+ LD H,(HL)
+ LD L,A
+ LD A,(HL)
+ INC HL
+ LD H,(HL)
+ LD L,A
+ LD (HL),37
+ INC HL
+ LD (HL),0
+ CALL func_show
+ LD HL,(global_b)
+ LD A,(HL)
+ INC HL
+ LD H,(HL)
+ LD L,A
+ LD (HL),36
+ INC HL
+ LD (HL),0
+ CALL func_show
+ RET
+
+func_printChar:
+ LD A, (local_vars+0)
+ B_CALL(_PutC)
+ RET
+
+func_println:
+ B_CALL(_NewLine)
+ RET
+
+func_show:
+ LD HL,(global_a)
+ LD A,(HL)
+ INC HL
+ LD H,(HL)
+ LD L,A
+ LD A,(HL)
+ INC HL
+ LD H,(HL)
+ LD L,A
+ LD A,(HL)
+ LD (local_vars+0),A
+ CALL func_printChar
+ LD HL,(global_b)
+ LD A,(HL)
+ INC HL
+ LD H,(HL)
+ LD L,A
+ LD A,(HL)
+ LD (local_vars+0),A
+ CALL func_printChar
+ LD HL,(global_c)
+ LD A,(HL)
+ LD (local_vars+0),A
+ CALL func_printChar
+ LD A,(global_d)
+ LD (local_vars+0),A
+ CALL func_printChar
+ CALL func_println
+ RET
+
+func_clrHome:
+ B_CALL(_ClrScrnFull)
+ B_CALL(_HomeUp)
+ RET
+
+global_a:       ; byte a
+ .DB 0
+
+global_b:       ; byte b
+ .DB 0
+
+global_c:       ; byte c
+ .DB 0
+
+global_d:       ; byte d
+ .DB 64
+
+local_vars:
+ .DB 0
+.END
+.END

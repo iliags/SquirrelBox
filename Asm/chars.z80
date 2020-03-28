@@ -1,0 +1,54 @@
+; =============================
+; COMPILED WITH SquirrelBox 1.6 alpha 6
+; =============================
+
+.nolist
+#include "ti83plus.inc"
+.list
+.ORG userMem-2
+ .DB t2ByteTok,tAsmCmp
+
+
+func_main:
+ CALL func_clrHome
+ LD HL,0
+ LD (PenCol),HL
+ LD A,0
+ LD (local_vars+1),A
+ADSMBLG_4:      ; <DO-WHILE>
+ LD A,(local_vars+1)
+ LD (local_vars+0),A
+ CALL func_drawChar
+ LD A,(local_vars+1)
+ ADD A,1
+ LD (local_vars+1),A
+                ; <IF>
+ LD A,(PenCol)
+ CP 90
+ JP C,ADSMBLG_7
+ LD A,0
+ LD (PenCol),A
+ LD A,(PenRow)
+ ADD A,6
+ LD (PenRow),A
+ADSMBLG_7:      ; <End IF>
+ LD A,(local_vars+1)
+ CP 255
+ JP C,ADSMBLG_4
+ADSMBLG_6:      ; <End WHILE>
+ RET
+
+func_drawChar:
+ LD A, (local_vars+0)
+ B_CALL(_VPutMap)
+ RET
+
+func_clrHome:
+ B_CALL(_ClrScrnFull)
+ B_CALL(_HomeUp)
+ RET
+
+local_vars:
+ .DB 0,0
+.END
+.END

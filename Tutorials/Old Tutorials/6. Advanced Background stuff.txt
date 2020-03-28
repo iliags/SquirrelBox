@@ -1,0 +1,301 @@
+Last modified: 12 May 2005
+
+==============================
+5. Advanced / Background stuff
+==============================
+
+   Just to say it in one other place: #end causes the preprocessor to ignore
+   the rest of a file from that point on. The only reason to have this is that
+   for some reason the compiler will sometimes read past the end of a file an
+   give you an "Unexpected end of file found" error if all you have is #define
+   statements. If this happens, just put #eof at the end (since putting it in
+   the middle of your code cuts off everything after it, you can also use it
+   to comment-out the rest of the file).
+
+  +-------------------------+
+  | Conditional compilation |
+  +-------------------------+
+
+   I mentioned in the first section that you can define indentifiers to be
+   checked for later. The main use of this so that people can make all kinds
+   of include files and stuff to customize the language to work for all kinds
+   things (shells, OS's, API's, subroutine libraries, you name it) and define
+   identifiers that can be checked for in all these include files in order to
+   communicate information about what kind of environment to make things work
+   for. For example, if you have ever looked through any standard C libraries,
+   you would see all kinds of similar (and much weirder & uglier) things being
+   checked to know what Operating System or hardware or whatever to make stuff
+   work for. With such a setup already in mind, I also went ahead and made it
+   so that the platforms to use are defined in the same way, but that was not
+   the main/original purpose of the #define preprocessor command.
+
+   To reiterate, any identifier can be defined by going #define identifier and
+   you can define more than one identifier at time by listing them like this:
+   #define ident1, ident2, ident3, etc. and you can even mix platforms with
+   non-platform identifiers (listing identifiers like this has the same effect
+   that declaring them separately does; it is only a matter of preference).
+
+   The whole point of defining identifiers is so that they can be checked for
+   in other files that have code that is only to be compiled under conditions
+   that are represented by which identifiers are defined. For example, if some
+   includes were made to allow programs to work for MirageOs and allow the use
+   of all kinds of MirageOS stuff, such includes/libs might define something
+   like MIRAGE_OS; at the same time, somebody could make some windowing/GUI
+   includes that are only compatible with MirageOS and AShell programs, but it
+   would have to work differently for each shell. Such an include file might
+   look something like this:
+
+   |#define BOBS_WINDOWING_API
+   |#ifdef MIRAGE_OS
+   |    ...code that is compatible with MirageOS...
+   |#else
+   |    #ifdef A_SHELL
+   |        ...code that is compatible with AShell...
+   |    #endif
+   |#endif
+
+   Everything between #ifdef identifier and #endif (or #else) is ONLY compiled
+   if the specified identifier was defined somewhere BEFORE the statement (which
+   is why it is important to define what you need before you do anything else).
+   Everything between the #else and the #endif is only compiled if the specified
+   identifier was NOT defined. There is also the #ifndef command, which works in
+   the opposite way (#ifdef is "if defined" and ifndef is "if not defined").
+
+   You can also check for the different platforms in the same way as any other
+   identifier, but there is a difference. Since you can compile programs for
+   more than one platform at once (probably something to be careful with), a
+   platform is not simply defined or not; instead, code that is compiled if a
+   platform was defined is compiled ONLY for that platform, or for everything
+   OTHER than that platform (in the case of #else or vice versa if using the
+   #ifndef command).
+
+   What the compiler does to handle this is that is preprocesses the source
+   code for each platform, generating a modified source code to compile for
+   each. During the preprocessing, code that should not be compiled is pre-
+   processed through anways to find the matching #endif (or #else) commands
+   and THEN ignored. For code that is only supposed to compile for certain
+   platforms, it checks whether the platform is the one currently being pre-
+   processed for rather than whether or not it was ever defined yet (in case
+   for some reason the platform is defined in some weird place other than as
+   the very first thing). After the source code has been preprocessed, the
+   modified code generated for each platform is compiled if the corresponding
+   platform was defined any time during that whole process.
+
+   It is important to know the difference between checking for platform and
+   checking for anything else for obvious reasons. For example:
+
+   |#define TI83_PLUS
+   |#define TI82
+   |#define TI86
+   |#define MONKEY
+   |
+   |#ifdef TI83_PLUS
+   |...segment-A...
+   |#else
+   |...segment-B...
+   |#endif
+   |
+   |#ifndef TI86
+   |...segment-C...
+   |#else
+   |...segment-D...
+   |#endif
+   |
+   |#ifndef MONKEY
+   |...segment-C...
+   |#else
+   |...segment-D...
+   |#endif
+   
+   If you were to compile that code in SquirrelBox, you would get an assembly
+   output tab for the TI83+, the TI82, and the TI86. The compiled code for
+   segment-A would ONLY appear in the TI83+ tab, while the compiled code for
+   segment-B would appear the tabs for everything else (the TI82 and the TI86).
+   segment-C would compile for everything but the TI86, and segment-D would only
+   compile for the TI86. Segment-C will compile for EVERYTHING because MONKEY
+   was defined; segment-D never compiles for anything (there is no point in
+   defining and checking the same things in the same file; this is supposed to
+   used to communicate between files where different setups or whatever are
+   either used or they are not used).
+
+   NOTE: it is a VERY BAD IDEA have include files automatically define platforms.
+   The user should have to specify all of the platforms that they want their code
+   to compile for.
+
+   FYI here are all of the special platform identifiers again:
+   TI82 TI83 TI83_PLUS TI83_PLUS_SE TI84_PLUS TI84_PLUS_SE TI85 TI86
+
+   NOTE: Everything that compiles for the TI83+ compiles for the whole TI83+
+   series (and everything that does not compile for the TI83+ does not compile
+   for the whole TI83+ series). See the Section 1 ("Getting Started") for more
+   information on this (no need for me to re-explain anything).
+
+  +----------------+
+  | Assembly stuff |
+  +----------------+
+
+   The ability to put have the compiler output specific assembly code that you
+   specify in your source code is the sole feature that makes Antidisassemblage
+   able to be customized to do almost anything and to work for/with any other
+   assembly libraries/routines/etc. The #header preprecoessor command can be
+   used to output the "assembly header". The syntax is simply #header "asm code"
+   (yes, it only takes string values). The #asm command outputs assembly code at
+   the very spot in the assembly output program that you use it, and the syntax
+   for it is the same as the header command, but you can ALSO give it variables
+   and numeric values. Note: varaibles get output in assembly as their address
+   (includes the parenthesis, i.e. (local_vars+5)). If you want to output the
+   address of a variable instead of the value at the address, you need to put
+   the '&' operator in front of it (this address operator can be used anywhere
+   else in Antidisassemblage code to get the address of a variable as a value).
+   You can also refer to the address of a function in the same way, though you
+   cannot refer to the value at that address (you have to put the & in front of
+   the name and omit the arguments and parenthesis).
+
+   Note: each #asm and #header command outputs a new line at the end of its output.
+   You can list multiple things to output on the same line with the #asm command
+   (separated by commas), but not with the #header command.
+
+   The #define command is also used defines replacements and assembly macros
+   when the next thing after it is a string value (otherwise it just defines
+   an some identifier). For example, the syntax for a simple replacement is:
+   #define "text1" as "text2", which replaces all instances of .text1 in the
+   rest of the code with text2 (you must put a dot in front of anything that
+   is a replacement, otherwise it is left alone instead of getting replaced).
+   Actually, replacements and assembly macros are defined the same way, though
+   assembly macros usually have more arguments (and replacements can too). The
+   thing that makes a replacement an assembly macro is explained later.
+
+   A macro is defined with the #define command by listing a series of string
+   values and indentifiers on both sides of the "as", all separated by commas.
+   Each identifier that you give is simply a place-holder for text that is to
+   be filled in where-ever the macro is used. The text and all the inputs for
+   each identifier are all replaced with whatever is on the other side of the
+   "as", where identifiers in the second part (which must match identifiers in
+   the first part) tell the compiler to place whatever text that was given in
+   place of each respective identifier. For example (you do not have to try
+   to understand what those strings mean):
+
+   |#define "DispS (", string, row, column, ")" as " ld a,", row,
+   |    "\n ld (CurRow),a\n ld a,", column, "\n ld (CurCol),a\n ld hl,",
+   |    string, "\n b_call(_DispS)"
+
+   That defines a macro that replaces something like this:
+
+   |byte[7] message = {"Hello!",0}
+   |
+   |void main() {
+   |    .DispS(message,5,7)
+   |}
+
+   with this:
+
+   |byte[7] message = {"Hello!",0}
+   |
+   |void main() {
+   |     ld a,5
+   | ld (CurRow),a
+   | ld a,7
+   | ld (CurCol),a
+   | ld hl,global_message
+   | b_call(_DispS)
+   |}
+
+   (note that message would be labelled "global_message" in assembly). The
+   code that replaced .DispS(message) is assembly code would not make any
+   sense to the compiler. Instead you would have to have it replace it with
+   a bunch of #asm commands, but that would be really messy and ugly with all
+   of those escape quotes (\") and commas in and around everything. For this
+   reason, I have made it so that putting the @ characer before something
+   after the "as" makes it comes out in the form of an #asm command. If more
+   than one thing in a row is marked with the @ character, those things will
+   come out "chained together" in a single #asm command (so if you want a new
+   line inbetween two assembly things in a series you will have to put an end-
+   of-line character there yourself). For example, this:
+
+   |#define "DispS (", string, row, column, ")" as @" ld a,", @row,
+   |    @"\n ld (CurRow),a\n ld a,", @column, @"\n ld (CurCol),a\n ld hl,",
+   |    @&string, @"\n b_call(_DispS)"
+   |
+   |byte[7] message = {"Hello!",0}
+   |
+   |void main() {
+   |    .DispS(message,5,7)
+   |}
+
+   ...comes out as this (after preprocessing as mentioned before; it does not
+   actually modify your source code, just the temporary code that is to be
+   compiled):
+
+   |byte[7] message = {"Hello!",0}
+   |
+   |void main() {
+   |    #asm "ld a,", 5, "\n ld (CurRow),a\n ld a,", 7,
+   |         "\n ld (CurCol),a\n ld hl,", &message, "\n b_call(_DispS)"
+   |}
+
+   (Note the comma after the 7; to the compiler that is all one "line of code")
+
+   If you examine that code, you should be able to figure out how it should
+   output assembly that looks like the assembly code above (where it would not
+   have made sense, it being assembly code rather than Antidisassemblage code).
+
+   Take a close look at how the "string" input is used in the macro; it has the
+   & character in front of it to refer to the ADDRESS of the input. This makes
+   it so that only a variable can be given for that input (since the address
+   of a value makes no sense and will result in an error if you tried to give
+   one), and it refers to the address of the input (variable). I added this
+   feature in recently so that you do not have to put an '&' in front of the
+   string input for the .DispS() macro (the syntax in assembly is to take the
+   ADDRESS of a string, and this eliminates any confusion that would result if
+   you would otherwise omit the '&').
+
+   Note the space in "DispS ("; for any whitespace in a string, any amount of
+   any kind of whitespace can be matched where it is used (even none at all),
+   so you should put a space where you want to allow whitespace. Whitespace is
+   also allowed between strings and inputs (the place-holder identifiers; I am
+   still not sure what to call them, but note that you can call them anything
+   you want, even reserved words or other variables that exist, because the
+   preprocessor does not know squat about the language, it just reformats your
+   code). The first thing after the #define must be a string value, but after
+   that you can have any order of inputs (identifiers) and strings. When there
+   are several inputs in a row before the "as" (no string values inbetween), a
+   comma is expected between the inputs where it is used (that is how it can
+   tell one input from another, since almost any set of chars can be one input).
+   When the last thing before the "as" is an input identifier, a semicolon is
+   expected to mark the end (or else it would just keep grabbing chars). You
+   have to be careful when using macros because anything is valid as an input
+   (there is no way to have them take only certain kinds of inputs or handle
+   different kinds of inputs in different ways). For example, nothing will stop
+   you from going .Disp("moo") even though "LD HL,moo" might not make any, or
+   .DispS(*5) which will attempt to display a string at address 0x0005 (each
+   numeric value from that point on is displayed as its character value until
+   it finds a zero; this is a really good way to screw up an assembly program
+   and likely crash your calculator, so do not do it!) 
+
+   NOTE: you cannot just give a string value to a macro and expect it to output
+   the string value how it would output a string VARIABLE. When a string value
+   is given, it gets output in assembly exactly how it is (but without quotes).
+
+   One more command: The #asminc command is used to include ASSEMBLY files in
+   the assembly output. This is neccessary because the compiler makes sure that
+   all assembly includes go at the top of the assembly output. The syntax is:
+
+   |#asminc "assembly include file"
+
+   where it would appear like so in the assembly output:
+
+   |#include "assembly include file"
+
+   This is the same as going #header "#include \"assembly include file\"",
+   except that everything included with the #asminc command ends up at the top
+   of the assembly output code BEFORE anything that is output with the #header
+   command; and going #asm "#include \"assembly include file\"" would output
+   that assembly code in the middle of some function (where-ever it is used).
+
+   Any assembly macro that could possibly affect the system flags should have a
+   "special condition" at the end (I really could not think of anything better to
+   call them, sorry). These can be used place of comparisons for control structures
+   like "if", "while", or "do-while", and are ignored elsewhere (so it is safe to
+   do with or without a condition using it). These conditions allow you to check
+   a system flag as the condition instead of having a comparison. See section 3
+   (Control Structures) at the very bottom for more information.

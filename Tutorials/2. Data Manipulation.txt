@@ -1,0 +1,359 @@
+Last Updated: 04 Oct 2008
+Dan Cook, shkaboinka@gmail.com
+http://groups.google.com/group/ADSMBLG/
+
+
+.---------------------------.
+|\|||||||||||||||||||||||||/|
+|-+-----------------------+-|
+|-| 2.1 - Using Variables |-|
+|-+-----------------------+-|
+|/|||||||||||||||||||||||||\|
+'---------------------------'
+
+
+A variable can be thought of as a textual entity ("identifier") associated
+with a place in memory that holds value. A Variable is declared by stating
+the data-type and then the name associated with it (and optionally, a value).
+After a variable is declared, it can be referred to throughout the code to
+access the value stored in its associated memory address. Assigning a value
+to a variable at any time changes the value stored in its associated memory
+address. Some examples will help to clarify all of this:
+
+==--==============================================
+00  #define TI83_PLUS
+01  #include "tios.ads"
+02
+03  void main() {
+04      clrHome();   // clear the screen
+05
+06      byte a;      // variable a
+07      byte b = 2;  // var b holds a value of 2
+08
+09      printNum(a); // print the value of a
+10      println();   // start a new line
+11      printNum(b); // print the value of b
+12      println();   // start a new line
+13
+14      a = 5;       // var a holds a value of 5
+15      printNum(a); // print value of a
+16      println();   // start a new line
+17
+18      b = a + 1;   // b holds 5+1, which is 6
+19      printNum(b); // print value of b
+20      println();   // start a new line
+21  }
+==--==============================================
+
+On line 6, a byte variable is declared and given the name (or alias) of "a".
+On line 7, another byte variable is declared and named "b", and also assigned
+a value of 2. For now, a byte can be thought of as a small number; thus, a and
+b are "small numbers".
+
+The printNum function is defined in tios.ads, and prints a byte value on one
+line. Lines 9-12 print the values of a and b. On line 14, the value of a is
+changed to 5 and then printed again. Then the value of b is changed to the
+value of a plus one (6), and is also printed again. When this program is run
+on the TI83+, it looks like this:
+
+.----------------.
+|0               |
+|2               |
+|5               |
+|6               |
+|            Done|
+|                |
+|                |
+|                |
+'----------------'
+
+If you were paying attention, you probably noticed that the value of a started
+out as zero. This is often the default value for local variables before they
+are used; but this is not always so in the case of system variables and within
+functions that get called at different times -- but a topic for another time.
+
+Variable names must be a valid identifiers. An identifier is text containing
+only letters, digits, and underscore _ characters (but never BEGINNING with a
+digit). Identifiers must also not have a reserved meaning (such as "main" for
+the main function or "byte" as the byte-data-type indicator). No variables
+[within the same context] can have the same name.
+
+It is also vital to point out that Antidisassemblage is CASE-SENSITIVE. That
+means that it recognizes "banana" and "Banana" and "BANANA" as three different
+identifies, because they contain different characters (uppercase "versions" of
+other characters).
+
+
+.-------------------------------------.
+|\|||||||||||||||||||||||||||||||||||/|
+|-+---------------------------------+-|
+|-| 2.2 - Expressions and Operators |-|
+|-+---------------------------------+-|
+|/|||||||||||||||||||||||||||||||||||\|
+'-------------------------------------'
+
+
+An expression is any symbolic phrase that resolves down to a single value. An
+example could be "1+2", or "5*6-8", or "a*(b-c/10)%20". Or it can even just be
+the number 7. Expressions can include numbers, operators (plus, minus, times,
+devide, etc), and variables. In most cases, an expression can be used anywhere
+that a numeric value can be used.
+
+Expressions are resolved according to an "order of operations," in which each
+operation is resolved in the order of its precendence. For example, because
+division has a higher precedence than addition, "a+b/c" is resolved as if it
+were written "a+(b/c)" and not "(a+b)/c". However, parentheses can be used to
+specify which parts of an expression to resolve first.
+
+The following is a list of operations that Antidisassemblage allows, grouped
+in order of precendence (with the first group having the highest priority):
+
+{ (), []  } Parenthetical statements and array indexing (or any grouping)
+{ &, *    } Addressing and Referencing
+{ -, +, ~ } negative, positive, and bitwise-not indicators (i.e. -5)
+
+{ *, /, % } multiplication, division, and modulus (remainder)
+{ +, -    } Addition and Subtraction
+{ <<, >>  } left and right logical bit-shift
+{ &       } Bitwise AND
+{ ^       } Bitwise XOR
+{ |       } Bitwise OR
+{ =       } The assignment operator
+
+...........................................................
+. * / % << >> OPS ARE NOT YET IMPLEMENTED AS OF THIS DATE .
+...........................................................
+
+An assignment statement is a statement in which an expression is assigned to a
+variable, in the form of "variable = expression". There are three examples of
+assignments in the example code at the top (lines 7, 12, and 15). Assignments
+can be "chained together" to assign a common value to multiple variables. The
+syntax for this is "a = b = c = exression" where a, b, and c will be assigned
+the same value that results from the epression.
+
+
+.-------------------------------.
+|\|||||||||||||||||||||||||||||/|
+|-+---------------------------+-|
+|-| 2.3 - Data Types & Values |-|
+|-+---------------------------+-|
+|/|||||||||||||||||||||||||||||\|
+'-------------------------------'
+
+
+Antidisassemblage variables can represent store types of data: 8-bit values
+(bytes) and 16-bit values (double-bytes, or words). The identifiers "byte" and
+"word" are used to indicate the "data type" or each variable. A byte can hold
+any value from 0 to 255, and a word can hold any value from 0-65535. You might
+be asking yourself why one would use a byte value over a word value; and the
+reason is that byte values are MUCH quicker to process and easier for the z80
+process to work with than word values are. Therefore, word values should only
+be used when they are absolutely neccessary.
+
+There is a third datatype called "void" which has a special purpose covered in
+section 4 about Functions. Variables may NOT have a void datatype.
+
+Antidisassemblage has no error-checking to prevent overflow. This means that
+when you add 1 to a byte that already holds the maximum value (255), it just
+wraps back around to zero. Likewise, subtracting 1 from a byte holding a value
+of 0 results in 255. This is also true for word values, but with 65535 as max.
+For this reason (and others which will be discussed soon), it is sometimes
+neccessary to convert a byte value to a word value, or vice versa. This is
+done by specifying the desired type in parenthesis next to the value (or
+expression) you wish to convert:
+
+==--====================================================================
+00  ...(word)(255+10)... // This gives you 265 instead of 10
+01  ...(byte)blah...     // This gives you the byte-version of word blah
+==--====================================================================
+
+Antidisassemblage supports the "0xNN" notation for hexadecimal values and the
+"0bNNNNNNNN" notation for binary values, where each 'N' is a bit or nibble. It
+does NOT support octal values. If you are unfamiliar with what a hexadecimal
+or binary value is, then you can just ignore this whole paragraph.
+
+Characters (textual values) are not distinguished from numbers. For example,
+'W' and ':' and '>' are all valid byte values. This is because every character
+is represented by a byte value, and every byte value represents a character.
+The two are only distinguished by context of use. A function that displays a
+character on the screen will display 'A' whether you give it 'A' or 65, and a
+function that displays a numeric value will display 32 whether you give it 32
+or ' '. Characters are explained in more detail (with strings) in section 5.
+
+
+.--------------------------------------.
+|\||||||||||||||||||||||||||||||||||||/|
+|-+----------------------------------+-|
+|-| 2.4 - Signed & Fractional Values |-|
+|-+----------------------------------+-|
+|/||||||||||||||||||||||||||||||||||||\|
+'--------------------------------------'
+
+
+Antidisassemblage does not truely support signed or floating-point variables.
+To do so would require a CONSIDERABLY LARGE amount of extra processing since
+the z80 processor does not support them either! HOWEVER, there IS a way around
+these limitations. Consider the following code-snippet with the explaination:
+
+==--=============================================
+00  byte a = -10;      // actually 246
+01  byte b = 25;       // technically 2.5*10
+02  byte c = a+b;      // 25-10 = 25+246-256 = 15
+03  byte d = (4*b)/10; // 4*2.5 = 10
+04  byte e = (5*b)/10; // 5*2.5 = 12
+==--=============================================
+
+The explanation:
+
+Fractional values ("decimals") can be simulated by a simple division. For
+example, byte b above can be thought of as holding "25 tenths" as long as
+there is a division by ten when using that value. If Antidisassemblage WERE
+to support fixed-point values, it would do the very same thing anyway. If
+you were paying attention, you probably noticed something off about line 4:
+that 5 * 2.5 is not 12. The reason we get 12 is because, again, there are no
+fractional values, and the 0.5 is lost with the division. However, byte e
+could keep track of that extra tenth by being treated in a similar manner; in which case the division would be removed to give us "125 tenths."
+
+For negative numbers, let's pretend that the largest number possible is 9,
+and anything larger is handled by ignoring that extra digit. That is, 7 + 7
+gives us 14, which give us 4 because we cannot keep track of that extra "1".
+Since any multiple of ten is essentially ignored (7 + 10 = 17 = 7), we can
+also add ten to a negative number to get it's "actual" value in our 0-9 world.
+In otherwords, 7 and -3 behave IDENTICALLY in this scenario:
+
+ 7 + 7 = 14 = 4
+ 7 - 3 =  4 = 4
+-3 - 3 = -6 = 4 (add 10)
+
+7 * 7 =  49 = 9
+7 *-3 = -21 = 9 (add 10 twice)
+-3*-3 =   9 = 9
+
+The scenario in Antidisassemblage is similar, but with 256 being the "10" for
+byte values and 65536 for word values. In most cases negative numbers can be
+used as if they were actually "there". However, it is important to realize
+this fact because -1 is NOT less than 25 if it is actually 255. And 300 (as
+a word value) plus -1 (as a BYTE value) is not 299, but 555! These problems
+can be resolved by adding in a median value during comparisons, and in other
+cases through type casting (previously mentioned in this section). However,
+this is not anything to worry about right now, as MUCH programming does not
+require true signed values.
+
+
+.------------------------------.
+|\||||||||||||||||||||||||||||/|
+|-+--------------------------+-|
+|-| 2.5 - Defining Constants |-|
+|-+--------------------------+-|
+|/||||||||||||||||||||||||||||\|
+'------------------------------'
+
+
+Many programming languages provide "constant variables," which are variables
+that can hold one value and one value only. The convenience of this is that
+when a set value must be used again and again, and that value might possibly
+be changed later on, then one only needs to change one line of code rather
+than making many changes. Antidisassemblage does not have constant VARIABLES
+(isn't that an oxymoron?), but it does provide a way to define constants. The
+following code shows how to use the #define directive to do so:
+
+==--==============================================
+..  ...
+11  #define "PI" as "471/150"
+12
+13  void main() {
+14     word oneFifteenTimesPi = 115*.PI;
+..  ...
+99  }
+==--==============================================
+
+Though I could EASILY have done something as simple as "ZOOM" being "500"
+(which would demonstrate the very principle of constants very well), I chose
+an expression value to emphasize even another advantage to these constants.
+
+The identifier for the constant goes in quotes after the #define, and the
+associated value goes in quotes after the as. The identifier, in this case PI,
+can then be used anywhere in the code AS LONG AS IT IS PRECEDED BY A DOT. This
+essentially tells the compiler to pretend that 471/150 is typed instead of .PI
+in as many places that .PI shows up. This is also how macros are defined, but
+usually much more complex than this (convered in section 6).
+
+IMPORTANT: The reason that "471/150" works here is that the compiler will THINK it sees "115*471/150", which is VERY different than "115*(471/150)"
+because of how it resolves: 115*471/150 becomes 54165/150 becomes 361, while
+115*(471/150) becomes 155*3 becomes 465. Just to make my point, 115 * 3.14159
+comes out to 361.28285, which is as CLOSE as you can get with integer math!
+
+NOTE: The reason I used a word instead of a byte is because of the 54165 that
+results in the middle. "31/10" is a fair trade, but less accurate. Fractional
+values are only ever as accurate as the number of significant digits that one
+is willing to use. That's a mathematical law, and NOT a language hinderance!
+
+
+.---------------------------.
+|\|||||||||||||||||||||||||/|
+|-+-----------------------+-|
+|-| 2.6 - A Demonstration |-|
+|-+-----------------------+-|
+|/|||||||||||||||||||||||||\|
+'---------------------------'
+
+
+One more example just for clarity:
+
+==--================================
+00  // Math.ads - I know math!
+01
+02  #define TI83_PLUS
+03  #include "tios.ads"
+04
+05  void main()  {
+06      clrHome();
+07
+08      printStr("Enter 2 Values:");
+09      println();
+10
+11      printStr("A? ");
+12      word a = getNum();
+13
+14      printStr(", B?");
+15      word b = getNum();
+16      println();
+17
+18      printStr("A * B = ");
+19      printNum(a*b);
+20      println();
+21
+22      byte div = a/b;
+23      byte mod = a%b;
+24
+25      printStr("A / B = ");
+26      printNum(div);
+27      println();
+28
+29      printStr("A % B = ");
+30      printNum(mod);
+31      println();
+32
+33      printNum(div);
+34      printStr(" * A + ");
+35      printNum(mod);
+36      printStr(" = ");
+37      printNum(div*a+mod);
+38      println();
+39  }
+==--================================
+
+The getNum() function is something I slapped together to get a numeric value
+from the user. Here is what this program looks like on a TI-83+ (assuming you
+give it the values of 57 and 13):
+
+.----------------.
+|Enter 2 values: |
+|A? 57, B? 13    |
+|A * B = 741     |
+|A / B = 4       |
+|A % B = 5       |
+|4 * A + 5 = 741 |
+|            Done|
+|                |
+'----------------'

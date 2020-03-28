@@ -1,0 +1,472 @@
+Last modified: 13 May 2005
+
+====================
+2. Data manipulation
+====================
+
+  +-----------+
+  | Variables |
+  +-----------+
+
+   Most programs are designed to actually DO SOMETHING. If you want to have
+   a program compute something or simulate something (i.e. a game) or really
+   be able to do anything at all beyond displaying the same old "Hello World"
+   message every time you run it, you will need some way to represent things
+   and remember information. This is where variables come in.
+
+   All data in any computer system (even a pocket calculator) is represented
+   by electrical charges stored in a memory cell; most computers have a vast
+   amount of these (thousands or even billions), which all together is called
+   "memory" (and there are different kinds, but the kind we will be concerned
+   with is RAM or Random Access Memory, which is a bunch of memory that is just
+   there for anything that might need it at any time). Each memory cell in a
+   computer is referred to by an address (its location in memory). For example,
+   the address of the first byte in RAM is 1, and the address of the three-
+   hundred-and-sixty-fifth byte in RAM is 365.
+
+   A variable is a representation of data that is stored somewhere in memory.
+   Actually, variables are just an abstract concept, they do not really "exist".
+   What happens when you declare a variable is that you are telling the compiler
+   to associate a name with an address in memory. You can name a variable what-
+   ever you like (though you should choose a name that relates to its purpose
+   like "size" or "total" instead of "x" or "number"), but the compiler gets to
+   choose the address. When you manipluate a variable you are actually telling
+   the compiler to manipulate the data that is stored at the address that the
+   variable is associated with. It does not really matter what the address of
+   a variable is, so it does not matter that you do not get to choose it or know
+   what it is (unless you are using pointers/indirection or something, but that
+   is a whole different thing and topic).
+
+   To declare a variable, you put the data-type and then the name. The data-
+   type is the type of data that the variable represents (antidisassemblage
+   only has two data-types: "byte" and "word"). A byte is an 8-bit value that
+   can store any whole number value from 0 to 255. A word it a 16-bit (2-byte)
+   value that can store a whole number from 0 to 65535. If you need to store
+   values larger than 255, use words; otherwise you should use the byte data-
+   type because it takes up less space in memory and they are easier for the
+   hardware to work with than words. Consider the following program:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte a;
+   |byte b = 7;
+   |byte[4] a_equals = {"A =",0};
+   |byte[4] b_equals = {"B =",0};
+   |
+   |void main() {
+   |    .HomeUp();
+   |    .ClrHome();
+   |    .DispS(a_equals);
+   |    .DispByte(a);
+   |    .NewLine();
+   |    .DispS(b_equals);
+   |    .DispByte(b);
+   |    a = b;
+   |    .NewLine();
+   |    .DispS(a_equals);
+   |    .DispByte(a);
+   |}
+
+   A few new commands are introduced here. DispByte(...) displays a byte value
+   with enough spaces in front for it to take up five character positions on,
+   the screen (there is also DispWord() for word values). NewLine() move the
+   home-screen cursor down to the beginning of the next line (this will also move
+   everything else up a line destroying whatever was on the top line when it this
+   is neccessary to make room for a new line at the bottom).
+
+   You can assign values to variables using the assignment operator '=' (there
+   are two examples of this in the program above); also notice that you can
+   assign values in the variable declaration. The value of a variable starts
+   out as zero (until you assign it a new value). After running the program
+   above, you should see something like this:
+
+   |A =    0
+   |B =    7
+   |A =    7
+   |            Done
+
+   "a_equals" and "b_equals" are array variables used to store the string
+   values "A =" and "B =" respectively (remember from section 1 that this
+   is how you store string values).
+
+   You can declare more than one variable of the same data-type all in the same
+   statement by listing them after the data-type (you can include assignment or
+   initializations too). For example, the variables in that last example could
+   have been declared like this:
+
+   |byte a, b = 7;
+   |byte[4] a_equals = {"A =",0}, b_equals = {"B =",0};
+
+   You can also chain several variables to the same assignment value like so:
+
+   |byte a, b, c;
+   |... // pretend there is a bunch of code here
+   |a = b = c = 9;
+
+   Use this form of assignment whenever you can because the assembly code that
+   it generates it more efficient (it calculates the assignment and then loads
+   the same resulting value into each variable, otherwise the assignment value
+   is recomputed for each assignment; even a simple value like 5 needs to be
+   loaded into a register before it is loaded the value of a variable).
+
+  +----------------------------+
+  | Expressions and operations |
+  +----------------------------+
+
+   The extra variables in that last example were actually very pointless since
+   you can display that same stuff as strings values (i.e. "A =            0").
+   The whole purpose of having variables is so that you can use them to compute
+   things and represent data that varies depending on things like user input or
+   simulations (hence the term "variable"). The operations (and the operator for
+   each one) that can be done on numeric values are: addition(+), subtraction(-),
+   bitwise-and(&), bitwise-or(|), bitwise-xor(^), and bitwise-not(~). All those
+   operations except for the last one take two values (the ~ operator goes in
+   front of a value and inverts its bits). Those bitwise operators combine the
+   bits of two values using the corresponding combinational logic.
+
+   Note: there are no multiplication, division, or modulus (remainder) operators
+   because the z80 processor has nothing to handle those operations, but they can
+   be simulated by writing functions or macros to loop and add or something.
+
+   An "expression" is a series of operations that results in a single value.
+   Expressions can be used in most places where a numeric a value is expected 
+   (i.e. assignments, function arguments, macro inputs, etc). Here is an example
+   program that uses some expressions:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte value;
+   |byte[8] equation1 = {"2*3-1 =",0};
+   |byte[12] equation2 = {"4-3+3*4*5 =",0};
+   |
+   |void main() {
+   |    .HomeUp();
+   |    .ClrHome();
+   |    value = 2+2+2 - 1;
+   |    .DispS(equation1);
+   |    .DispByte(value);
+   |    value = 3+3+3+3;
+   |    value = 4 - 3 + value+value+value+value+value;
+   |    .NewLine();
+   |    .DispS(equation2);
+   |    .DispByte(value);
+   |}
+
+   After you run that program, you should see this:
+
+   |2*3-1 =    6
+   |4-3+3*4*5 =   61
+   |            Done
+
+   There are actually two more operators that I did not explain; you can refer
+   to the address of a variable by sticking the '&' character in front of it
+   (this is the same operator that is used for bitwise-and. The difference
+   is that bitwise-and combines two values and you can only take the addres
+   of a single variable), and you can refer to the value at the address of a
+   value by using the '*' character in front of it (this is just the opposite
+   of addressing, in fact these operators cancel eachother out! For example, *55
+   refers to the value at address 55, and **55 refers to the value at the address
+   of *55) The order that operations are resolved in ("order of operations") shown
+   below (indexing is explained with arrays below):
+
+   Order of operations
+   ===================
+   Parenthesis        ()
+   Indexing           []
+   Type-casting       (byte) (word)
+   Address/Reference  & *
+   Bitwise Not        ~
+   Negation           -
+   Bitwise            & | ^
+   Arithmetic         + -
+
+   Note: The SquirrelBox compiler automatically simplifies numeric expressions
+   into a single numeric value. This means that you can use expressions like
+   4+9-5 in any place that a single value is expected, even if an expression
+   would otherwise be invalid. You can use the * / and % operators in numeric
+   expressions, but not with things like variables and function calls.
+
+   Some other stuff that I forgot to mention and threw together at the last minute:
+
+   Expressions can contain any number of operations, function calls, references,
+   etc, but be careful not to "nest" things too much, or else the compiler will run
+   out of registers to use for anything and you will get an error message. You can
+   ONLY have function calls towards the beginning of expressions (this helps avoid
+   the problem of expressions in other functions using/overwriting registers that
+   were in used before the call).
+
+   One thing I almost forgot to mention is type-casting. You can cast anything
+   to a byte or a word to have the compiler treat something like a byte or a word.
+   The syntax for this is simply (byte)something to cast something as a byte or
+   (word)something to cast something as a word. This can be applied to function
+   calls or whole expressions too, i.e. "(byte)(some big long expression)".
+
+   Not only is there are certain order that operations are resolved in, but there
+   is also a certain order that you must put them in. The order is (using another
+   pointless example): -~*(cast)value[index].
+
+  +----------------------------+
+  | Global vs. Local variables |
+  +----------------------------+
+
+   All of the variables that have been used in examples so far have been global
+   variables. Global variables are declared outside of functions (usually before
+   any functions are declared) and an be manipulated and used anywhere in any
+   function and they are permanent (they always "exist"). You should use global
+   variables when you want to share values between everything. Local variables
+   are declared inside of functions and can only be used and manipulated within
+   the block of code that they are declared in (they don't "exist" outside of it).
+
+   Since global variables "always exist", they can be given initialized with a
+   starting value. When "assign a value" to a global variable where you declared
+   it, that value is loaded directly into its address when the code is compiled
+   (the addesses of all the user defined variables are in the program itself).
+   It is good practice to initialize all global variables because doing so has
+   no runtime cost and they would otherwise be initialized with zeros anyways.
+   Since global initializations do not occur at runtime, you can only use exact
+   values (nothing that refers to other variables or uses any operations).
+
+   Use local variables too when you can because they save space. Since local
+   variables do not always "exist" (this is just another abstract concept), some
+   local variables that never coexist end up sharing the addresses causing them
+   to overlap/overwrite eachother in memory. However, this has the effect of
+   causing local variables to end up with unpredictable "garbage values" left in
+   them if other variables with the same adress(es) are used. This means that it
+   is a good idea to assign something to a local variable before using it for
+   anything else (or else expect it to contain unpredictable "garbage values").
+
+  +--------+
+  | Arrays |
+  +--------+
+
+   An array is a series of values stored one after the other (like a list). An
+   arrays is declared just like any other variable, but with the size declared
+   in square brackets after the data-type. There are no special operations that
+   can be done on a whole array (unlike what is on the TI-83+, but those are not
+   true arrays, they are higher level datastructures they decided to call "lists").
+   The values in an array are accessed by putting the index in square brackets
+   after the variable name (note: the first index is 0 (zero) and the last index
+   is one less than the size because the index is an offset from the base address
+   of the array making the first index zero bytes away from the base address).
+
+   NOTE: The size and idexes of an array are always in BYTES, so if you declare
+   a word[4], you are delcaring a word array of 4 bytes, not 4 words. The word-
+   value of an array index is contained in that index and the one after it. This
+   also means that you must be careful not to use the last index of an array (one
+   less than the size) as a word or else it will "spill over" into whatever the
+   next byte is. Also, the z80 is a "little endian" processor, which means that
+   word values are stored little-end first (i.e. the word values of 5 and 300
+   stored together in one array would be {5,0,44,1}, not {0,5,1,44}; the word
+   value of index-0 would be 5 (5 + 0*256), index-1 would be 11264 (0 + 44*256),
+   index-2 would be 300 (44 + 1*256), and index-3 (the last index) would be 1 +
+   256 * whatever the next byte in memory is).
+
+   An array can be initialized by listing the byte values between braces ('{' and
+   '}'), separating each value with commas (though if you wanted to assign values
+   to an array in a function, you would have to do it one byte at a time for each
+   index or one word at a time for every two indexes). Here is another example:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte[3] list = {23,0,200};
+   |
+   |void main() {
+   |    .HomeUp();
+   |    .ClrHome();
+   |    .DispByte(list[0]);
+   |    .NewLine();
+   |    .DispByte(list[1]);
+   |    .NewLine();
+   |    .DispByte(list[2]);
+   |    list[0] = list[2] + 7;
+   |    list[1] = 9;
+   |    list[2] = list[2] - list[1];
+   |    .NewLine();
+   |    .DispByte(list);
+   |    .NewLine();
+   |    .DispByte(list[1]);
+   |    .NewLine();
+   |    .DispByte(list[2]);
+   |}
+
+   Runtime output:
+
+   |   23
+   |    0
+   |  200
+   |  207
+   |    9
+   |  191       Done
+
+   If you match the program output with the source code, you should be able to
+   see how each element in the list was changed and displayed.
+
+   It should be obvious from the example how array-indexing works; you just put
+   the array index after the array variable in square brackets i.e. array[index].
+   If you prefer to do things at a lower level (or if for some reason there is a
+   bug that does something wierd with array indexes since I recently just removed
+   them and then plopped them back into the language/compiler) you can manually
+   add values to an address and dereference it. This "alternate syntax" looks like
+   this: *(&array + index). How it works (what it means) is that &array refers to
+   the address of the array variable and then you just add an offset to it. The
+   *(...) part dereferences it all to which can be used like a variable at the new
+   address (you can even assign things to it; yes, you can even do something like
+   *234295 = 34, but that may not be a very smart thing to do since it can screw
+   up your calculator if you change something vital). See section 5 on indirection
+   for more information about indirection and dereferencing.
+
+   The Antidisassemblage language is very loose in that you can index or dereference
+   anything at all, so it is up to you not to do something stupid like changing the
+   value at some random address that the OS might be using and cause your calculator
+   to crash. Also, the compiler does not check whether something is an array or not,
+   it just checks the basic data-type (byte or word), so you can use an array like
+   any other variable. You can just think of an array as a normal byte or word with
+   extra data stored after it, or that everything is an array and the default array
+   length is one byte for a byte and two bytes for a word.
+
+   I was going to allow arrays to have multiple dimensions until I discovered
+   some problems that would make multidimensional arrays very difficult to handle
+   (see "Limitations" in "0. START HERE & ToC.txt"), so arrays can only have one
+   dimension (size). If multidimensional arrays were allowed, you could use them
+   to create arrays of arrays in the form of tables or matrices like so:
+
+   |byte[3] list = {0,1,2}; // this is allowed
+   |byte[4][2] table = { {0,1}, {2,3}, {4,5}, {6,7} }; // THIS IS NOT ALLOWED!!
+   |
+   |byte[3][4] matrix = { // THIS IS NOT ALLOWED!!
+   |    { 0, 1, 2, 3},    // THIS IS NOT ALLOWED!!
+   |    { 4, 5, 6, 7},    // THIS IS NOT ALLOWED!!
+   |    { 8, 9,10,11}     // THIS IS NOT ALLOWED!!
+   |};
+   |
+   |byte[3][3][3] cube = { // THIS IS NOT ALLOWED!!
+   |    {                  // THIS IS NOT ALLOWED!!
+   |        { 0, 1, 2},    // THIS IS NOT ALLOWED!!
+   |        { 3, 4, 5},    // THIS IS NOT ALLOWED!!
+   |        { 6, 7, 8}     // THIS IS NOT ALLOWED!!
+   |    },                 // THIS IS NOT ALLOWED!!
+   |    {                  // THIS IS NOT ALLOWED!!
+   |        { 9,10,11},    // THIS IS NOT ALLOWED!!
+   |        {12,13,14},    // THIS IS NOT ALLOWED!!
+   |        {15,16,17}     // THIS IS NOT ALLOWED!!
+   |    },                 // THIS IS NOT ALLOWED!!
+   |    {                  // THIS IS NOT ALLOWED!!
+   |        {18,19,20},    // THIS IS NOT ALLOWED!!
+   |        {21,22,23},    // THIS IS NOT ALLOWED!!
+   |        {24,25,26}     // THIS IS NOT ALLOWED!!
+   |    }                  // THIS IS NOT ALLOWED!!
+   |};
+
+   However, you can use an array to (abstractly) represent a table or grid of
+   any numbuer of dimensions by multiplying and adding the correct offsets. For
+   example, you could represent the above data like so:
+
+   |byte[3] list = {0,1,2};
+   |byte[8] table = { 0,1, 2,3, 4,5, 6,7 };
+   |
+   |byte[12] matrix = {
+   |    0, 1, 2, 3,
+   |    4, 5, 6, 7,
+   |    8, 9,10,11
+   |};
+   |
+   |byte[27] cube = {
+   |     0, 1, 2, // . .----> X  0:{x,Y,Z}
+   |     3, 4, 5, // | |         1:{x,y,z}
+   |     6, 7, 8, // | |         2:{x,y,z}
+   |              // | V Y
+   |     9,10,11, // |           4:{x,y,z}
+   |    12,13,14, // |           5:{x,y,z}
+   |    15,16,17, // |           6:{x,y,z}
+   |              // |
+   |    18,19,20, // |           7:{x,y,z}
+   |    21,22,23, // |           8:{x,y,z}
+   |    24,25,26  // |           9:{x,y,z}
+   |};            // V Z
+
+   Though those arrays are one-dimensional, the data is organized in similar
+   groups (this arrangement is just a visual aid and has no affect on how the
+   data is stored or accessed; remember that this is a free-form language and
+   you can format your code however you want). For example, if we pretend that
+   the byte[27] called "cube" in the above code is a byte[3][3][3], then value
+   at the imaginary indexes [Z][Y][X] can be calculated as x+y*3+z*9 (that is
+   X + Y*columns + Z*columns*rows); or you could think of it as an array of 9
+   3D points (a byte[9][3]) that can be accessed as component+point*3 where
+   component is 0, 1, or 2 for the X, Y, or Z component of the given point).
+
+  +---------+
+  | Strings |
+  +---------+
+
+   A Character is any textual symbol like 'A' or '?' (everything that you see
+   in this text file is a character). Each Character is represented by a numeric
+   value from 0 to 255. This means that any byte value can represent a character
+   and any character can be represented as a byte value. In Antidisassemblage,
+   character values are treated as the numeric value that they represent (so you
+   can use character values in place of byte values and vice versa). Example:
+
+   |byte A = 'A', a = 'a', at = '@', num = '#';
+   |byte[13] message = {'H','e','l','l','o',' ','W','o','r','l','d','!',0};
+
+   Most computer systems use the same standard character coding (ASCII code, go
+   look it up somewhere) which is why this text file looks the same to you as it
+   did when I typed it up (actually ASCII code only defines characters for the
+   first 128 values (0 to 127), and most systems sorta have their own idea of
+   what to do with the other values). The TI-83+ (and the other platforms) uses
+   ASCII code for most of its characters, but it also has a lot of other weird
+   characters (like PI, Theta, and a bunch of wierd arrows just to name a few),
+   so do not expect all characters to come out the same on a TI-83+ as they do
+   on a PC (letters, numbers, and most punctuation should stay the same though).
+
+   That byte[13] in the example above should look familiar to you because I have
+   used it before in other examples in a more compact form. A string is a series
+   of characters contained in double quotes. When you use a string in an array,
+   it has the same effect as listing all of the characters that it contains one
+   at a time; so the byte[13] that I mentioned could also be declared like this:
+
+   |byte[13] message = {"Hello World!",0};
+
+   As far as you know (or as far as I know that you know), using strings and
+   characters are just a fancy way to store numeric values, because that is all
+   that they do; but then again there is that DispS(...) macro that displays an
+   array a string. So what makes a string a string? Nothing, a string is just
+   another abstract concept like a table or a variable.
+
+   The only important thing for you to know about how strings are handled by
+   your graphing calculator is that they must always end with a zero (that is
+   how stuff that works with strings knows where a string ends). If you forget
+   to put a zero at the end of a string, then things like the DispS() macro
+   will keep searching past the end of the sting through other memory addresses
+   until it finds a zero; this could cause your calc to crash or do something
+   even worse. Also make sure that you do not mistake the CHARACTER zero ('0')
+   for the NUMBER zero; the value of the zero character is NOT zero (or else
+   how could you display the zero character?)
+
+   There are some special characters that would be confusing to see if you
+   typed them as they are (like some of the whitespace characters); it would
+   be confusing to see quotes within a string or a single quote in single
+   quotes. To fix this problem, I had Antidisassemblage use the same format
+   for "escape characters" used by C++ and Java. Escape characters are marked
+   by the backslash character followed by another character. Here are all of
+   the escape characters and how they are represented:
+
+   \' for '
+   \" for "
+   \t for tab
+   \n for the new-line or "end of line" character
+   \0 for the null character (a character whose NUMERIC VALUE is zero)
+   \\ for \
+
+   Escape characters keep otherwise ambigous things clear. Consider the following
+   examples of strings with escape characters in them:
+
+   |"I said "Hello"."        // "I said " followed by Hello followed by "."
+   |"I said \"Hello\"."      // I said "Hello".
+   |"C:\this_folder\"        // C:	his_folder" ... (ending quote is missing)
+   |"C:\\this_folder\\"      // C:\this_folder\
+
+   Note: You can use actual tabs and end-of-line chars in strings or character
+   literals, but you should not do it because it can look weird and confusing.

@@ -1,0 +1,267 @@
+Last Modified: 6 June 2007
+
+All files in these tutorials are best viewed WITHOUT having word-wrap "ON".
+These tutorials have textual digrams and stuff that will look really ugly
+if they do not line up, so please view them with something that will force
+all of the characters to line up nicely (i.e. Notepad, for Windows users),
+otherwise force everything to an orthometric font like "Lucida Console".
+
+These tutorials are for the Antidisassemblage language with respect to the
+SquirrelBox compiler, and [were] correct at the date indicated at the top of
+each file. If any changes or improvements have been made since then, then I
+cannot really help that now can I?
+
+For additional information, visit this website:
+http://groups.yahoo.com/group/Antidisassemblage/
+
+Or you can send an Instant message to me as shkaboinka or CrazyProgrammer
+
+=============
+0. START HERE
+=============
+
+.----------------------.
+| 0A Table of Contents |
+'----------------------'
+
+       0. Intro & Contents
+  .---------------------------------.
+  | A  Table of Contents            |
+  | B  Introduction/Description     |
+  | C  What you need (Requirements) |
+  | D  Technical information        |
+  | E  Known bugs & glitches        |
+  | F  Language limitations         |
+  '---------------------------------'
+ 
+       1. Getting Stated
+  .---------------------------------.
+  | A  A sample program             |
+  | B  Parts of a program           |
+  | C  Formatting info              |
+  '---------------------------------.
+
+       2. Data Manipulation
+  .---------------------------------.
+  | A  Variables                    |
+  | B  Expressions and operators    |
+  | C  Global and Local variables   |
+  | D  Arrays                       |
+  | E  Strings                      |
+  '---------------------------------'
+
+       3. Control structures
+  .---------------------------------.
+  | A  Program flow                 |
+  | B  Conditional execution        |
+  | C  Looping                      |
+  | D  Special conditions           |
+  '---------------------------------'
+
+       4. Functions
+  .---------------------------------.
+  | A  Modularized programming      |
+  | B  Passing and returning values |
+  | C  Function headers             |
+  '---------------------------------'
+
+       5. Indirection (pointers)
+  .---------------------------------.
+  | A  Indirection                  |
+  | B  Conclusion                   |
+  '---------------------------------'
+
+       6. Advanced techniques
+  .---------------------------------.
+  | A  Conditional compilation      |
+  | B  Assembly code                |
+  | C  Debugging                    |
+  '---------------------------------'
+
+  +-----------------------------+
+  | Intro/Description and Setup |
+  +-----------------------------+
+
+   Antidisassemblage is a high-level programming language (a 3GL) designed for
+   TI-Graphing-Calculators that use the z80 processor (and have a link port)
+   (these: TI-82, TI-83, TI-83+, TI-83+ SE, TI-84+, TI-84+ SE, TI-85, and TI-86).
+
+   Antidisassemblage looks similar to C++ and Java, but with some interchangable
+   syntax that is similar to TI-BASIC (for those who prefer that format). Only
+   very foundational things are actually built-in to the language (things like
+   data manipulation and control of program flow). Everything else can be added
+   to the language through the use of "include files" that use assembly macros
+   to define various things ("6. Advanced / Background stuff" talks about that).
+
+   The Antidisassemblage language can be used to do anything that can be done
+   in assembly. This makes it possible for the language to be customized to
+   work with/for already existing shells, kernels, graphics engines, APPS, or
+   anything else made in assembly (or mix of assembly and Antidisassamblage).
+
+   Antidisassemblage is compatible with ALL of the z80 platforms, but the TI-83+
+   is focused on throughout my tutorials because it is the most commonly used.
+
+   Your Antidisassemblage code will generate a program for as many platforms as
+   you specify (all at once). However, if your program is intended to work with
+   something that is only for a couple platforms (i.e. the "Crash" shell for the
+   TI-82, or "MIrageOS" for the TI-83+ series), then it is best to compile only
+   for those platforms. But if you have very generic code that does not use any
+   platform-specific stuff, then it would not hurt to compile for every platform.
+
+  +------------------------------+
+  | What you need (Requirements) |
+  +------------------------------+
+
+   To make full Antidisassemblage programs, you will need:
+
+   - Java Runtime Environment (http://java.sun.com/javase/downloads/index.jsp)
+     (this is WELL WORTH having; most online apps [i.e. yahoo games] use java)
+
+   - An assembly compiler (i.e. Tasm or AsmStudio from http://www.ticalc.org)
+
+   - One of the following:  - SquirrelBox 1.5.jar (along with adds.ico and all
+                              of the *.GIF and files in the "classes" folder)
+
+                            - SquirrelBox.bat (along with everything in the
+                              "classes" folder except the html and jar files)
+
+                            - SquirrelBox.html (along with everything in the
+                              "classes" folder except the bat and jar files)
+
+   SquirrelBox compiles programs into assembly source code, so an assembly
+   compiler is needed in order to compile the result into a runnable program.
+
+   SquirrelBox comes in the form of an executable JAR file, which can be run
+   as just like an EXE file. If it does not launch properly, (some computers
+   try to open JAR files instead of run them), then configure your computer to
+   "open" JAR files with java.exe (javaw.exe if you have windows). Alternately,
+   you can type "java -jar SquirrelBox" in the command prompt and press enter
+   (make sure you include the correct directories for java and SquirrelBox).
+   If you have Windows though, you can just run SquirrelBox.bat, which will
+   do all of that command-prompt stuff for you in the background.
+
+   Alternatively, you can try the JApplet version of the compiler by opening
+   SquirrelBox.htm. This version may work if your web-browser is java-enabled
+   and your system is not (though JApplets cannot do any file-I/O, which is
+   why all the "include files" that are used have to be open in the editor).
+
+  +-----------------------+
+  | Technical information |
+  +-----------------------+
+
+   The SquirrelBox compiler is open source. That means that you can look at the
+   source code of it and even change it how you like, but it is also protected by
+   the GNU General Public Liscence, which means that I get all the credit as the
+   owner and creator of the SquirrelBox compiler and the source code, so do not
+   try to take credit for any of it as your own. If you want to use any of my work
+   in something of your own, you must get my permission first and make the proper
+   references to my work or whatever. See the GNU GPL message for moe information
+   (it is attached at the beggining of all the source files and is displayed in a
+   pop-up window when you run SquirrelBox).
+
+   Antidisassemblage (or ADSMBLG for short) is the programming language that I
+   made up, and the SquirrelBox compiler is what makes ADSMBLG a real programming
+   language. Though I get credit for creating the language and compiler for it, I
+   invite everyone to add to and expand Antidisassemblage by creating include files
+   to customize it to work with/for anything (i.e. existing assembly libraries,
+   shells, applications, etc). For more info, see "6. Advanced / Background stuff".
+
+   The way that Antidisassemblage is formatted and should should be handled by a
+   compiler should not change from how it is defined and handled by SquirrelBox. If
+   you want to make your own compiler or tutorials for Antidisassemblage, then you
+   should talk to me first to make sure that everything stays consistant. The Anti-
+   disassemblage language is subject to modification at any time at my discretion.
+
+   "Antidisassemblage" and "SquirrelBox" are just arbitrary names that were chosen
+   because they sounded good (and won the vote among other possible but much worse
+   names such as "Piece of sCrap" and "(type)this"). If there is anything else with
+   the same name that has been around longer, it is just a coincidence.
+
+  +-----------------------+
+  | Known bugs & glitches |
+  +-----------------------+
+
+   When you save a file (not save as), it saves it in the current directory. All
+   files save when you compile, so if you change directories from the file chooser
+   and then compile, it will save all the open files in that directory, so it may
+   be a good idea to keep all files in the same directory and move them later if
+   you want to.
+
+   Local variable names cannot be reused within loops because SquirrelBox does not
+   "unuse" out-of-scope variables within loops, so they still reserve the variable
+   name (though you should still not be able to access them). The memory addresses
+   of these variables should still be available to new variables though. Hey isn't
+   that crazy how all this text just HAPPENED to line up into a perfect rectangle?
+
+   Version 1.5 mainly just fixed a bug that would not allow you to goto a label
+   that is declared below a goto statement that uses it. I also fixed some typos,
+   organized some files, and pretty much re-did this file. Also, it would often
+   output the WRONG CODE for certain comparisons (comparing a pointer instead of
+   a value), but that was fixed as well (this was evident in my tiny game demo
+   that did not used to work because of that, but now it works fine).
+
+  +----------------------+   (Keeping in mind that for some unprofessional attempt
+  | Language limitations |    at something so complex as Antidisassemblage was to
+  +----------------------+    make in the first place, it's pretty decent!)
+
+   Most high-level languages have dynamic variable allocation/storage and huge
+   data-types, but these things can make programs like 15 times as inefficient and
+   slow as the assembly equivilant of the same program. This is usually no big deal
+   on a PC though because they are big engough and fast enough to compensate for
+   such things found in C++ and Java (and the hardware is DESIGNED for such things).
+
+   The z80 processor is only designed to work with one- or two-byte values at one
+   time. The only data-types in ADSMBLG are "byte" (1 byte) and "word" (2 bytes).
+   There are no floating-point types because they are just plain inefficient and
+   ugly to work with. Fractional values can be computed by division or bit-shifts. 
+
+   Function calls are only allowed at the beginning of expressions. You can "nest"
+   things like function calls and array indexing, but only to a certain point (the
+   compiler will tell you if you run out of registers to use in an expression). For
+   operations that require too many temporary values (parenthetical statements),
+   you should calculate the value and store it in a variable or push it onto the
+   stack (there should be assembly macros for this).
+
+   On top of all that, I removed the multiplication, division, and modulo ops
+   (* / and %) from the language. Instead, there are some functions and macros
+   defined that do these operations (this is the ONLY way that this can be done
+   on a z80 processor). Bit-shifts are best for dividing/multiplying by powers 2.
+
+   I used to have a complex system worked out so that conditions could consist
+   of a bunch of comparisons "anded" and "ored" together, but it got very messy
+   and it was a pain to debug, so I got rid of them. Now conditions are nothing
+   more than single comparisons with an optional "not" around it.
+
+   There are no string or character VARIABLES, but string- and character-
+   literals are valid array- and byte-values. Thus, arrays and bytes are used
+   as string and character variables because there is distinction between them.
+
+   There is no dynamic variable storage or allocation. The compiler assigns a
+   fixed address (it can never change) to every variable ever used. This means
+   that you cannot create new instances of data/variables like in C++ or Java
+   (where the keyword "new" is used). I was originally going to have dynamic
+   variables that are stored in the stack, but that is messy and should never
+   be used unless it is needed (it allows for perfect recursion since multiple
+   instances of variables can be on the stack at one time). If you really want
+   to, you can always manually push things onto the stack. This also means that
+   arrays cannot be resized (otherwise other data would be destroyed and there
+   would be sections of unused data left behind). If you need, you can give an
+   array a maximum size and store a temporary size at the beginning or something.
+
+   Because it is inefficient to pass a whole array to a function (because each
+   value must be copied and because you cannot change the size of arrays), this
+   is not allowed. When this is attempted, only the first value is passed and
+   returned. Antidisassemblage makes no distinction between arrays and single
+   values, though it does allocate the specified memory for arrays. However,
+   the use of pointers solves this problem quite nicely (see "5. Indirection").
+
+   I was also going to allow multi-dimensional arrays, but since it is possible to
+   index an array with something other than an exact value, extra code would have
+   to be generated to add and multiply the correct offset values and stuff (you
+   can still simulate multi-dimensional arrays if you do all that stuff manually).
+   An even bigger problem is that a multi-dimensional array of unknown dimensions
+   would be impossible for the compiler to work with without adding extra stuff
+   to track array sizes (this problem relates to the problem as above).
+
+   As of version 1.4 of SquirrelBox, I removed the for-loop because it generated
+   poor assembly code, and you can simulate a better one with a while loop anyway.

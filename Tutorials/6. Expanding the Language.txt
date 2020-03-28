@@ -1,0 +1,49 @@
+Last Updated: 28 Sep 2008
+Dan Cook, shkaboinka@gmail.com
+http://groups.google.com/group/ADSMBLG/
+
+.-----------------------------.
+| 6.1 - Using "Include Files" |
+'-----------------------------'
+
+Briefly discuss the theory of how these are meant to be used. Mention macros and
+conditional statements to be discussed soon after, but emphasize how even just
+functions, global variables, and constants packaged in one file can be very useful.
+(This give people something to work with without requiring it to be as low-level
+or complex as otherwise). Reintroduce the concept of choosing explicit addesses as
+as way to gain access to system variables and routines.
+
+
+.-------------------------------.
+| 6.2 - Conditional Compilation |
+'-------------------------------'
+
+Explain it all. Explain defining indentifiers for flagging purposes as well as for
+choosing a platform. Explain the #eof directive too.
+
+
+.-------------------------------.
+| 6.3 - Inserting Assembly Code |
+'-------------------------------'
+
+Explain the #asm command.
+
+
+.-----------------------.
+| 6.4 - Defining Macros |
+'-----------------------'
+
+Explain how to define macros as complex replacement statements (make that correlation).
+Explain how, since this is mostly only useful when using assembly commands that there
+is a special syntax for it. Show how to use it. Explain how to use the boolean-flag-
+constants to trip macros into working as conditions.
+
+
+.----------------------------.
+| 6.5 - Combining techniques |
+'----------------------------'
+
+Explain how to combine functions, macros, and #asm commands to generate efficient
+tools (more usable macros as well as cleverly packing away asm routines that macros call).
+IT WOULD BE NICE IF THERE WAS A WAY TO MARK FUNCTIONS AS ONLY USABLE BY ASSEMBLY STUFF.
+IE routine Name { ... }

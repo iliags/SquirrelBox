@@ -1,0 +1,433 @@
+Last modified: 13 May 2005
+
+==================
+1. Getting started
+==================
+
+  +------------------+
+  | A sample program |
+  +------------------+
+
+   Let's start with an example program. Follow the instructions in the intro to
+   launch the SquirrelBox compiler. You will get a pop-up window that displays
+   that GNU General Public Liscence thing; click OK to get rid of it (after you
+   have finished reading it, right?). Click "File:New" to get a new tab titled
+   "Untitled1.ads" (no pun intended) and type in the follwing code (IGNORE THE
+   "LINE" ALONG THE LEFT EDGE OF THE CODE; it is only there for the effect):
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte[13] message = {"Hello World!",0};
+   |
+   |void main() {
+   |    .HomeUp();
+   |    .ClrHome();
+   |    .DispS(message);
+   |}
+   |
+   |#eof
+
+   Once you have typed that in, click "File:Save" and save it as something like
+   "helloworld.ads". Notice that before you saved it, there was an asterisk "*"
+   after the name (this indicates when a file is not saved, and it will reappear
+   if you make any changes to the text). After you save it the asterisk goes away
+   and the title of the tab changes from "Untitled1.ads" to whatever you saved
+   it as. Click "File:Open" and open "text.ads" (it should have come with every-
+   thing else). Make sure that the tab that has the code that you just typed is
+   visible (click on the tab) and then click "Build:Compile" to compile it. When
+   it is finished, you will get a pop-up message (Compilation complete...), and a
+   new tab titled "TI-83+" will appear at the bottom. If there were any errors in
+   your code, you will get an Error message; if you do, make sure that your code
+   matches the code above and try again.
+
+   The code that you see in the TI-83+ tab is the actual assembly code for the
+   program above (this is assembly SOURCE CODE, so you will need to an assembly
+   compiler (i.e. Tasm or asmStudio) to compile it into machine code). Make sure
+   that the TI-83+ tab is selected and click "File:Save As" to save the output as
+   a z80 assembly source file (you can name it "helloworld.z80"), and then follow
+   the instructions of whatever assembly compiler that you are using to compile
+   the assembly code into a file for your TI-83+ (or whatever calculator you are
+   using; more on other platforms further down), and then follow the instructions
+   of whatever linking program you want to use (I recommend using either TiLP or
+   TI-Connect which both can be found at http://ticalc.org/pub/win/link) to send
+   the file to your TI-83+ (or whatever calculator). To run the program on your
+   TI-83+, press [2nd][Catalog] (above the [0] key) and choose the "asm(" token
+   and then press [PGRM] and select your program to paste it onto the Home-Screen
+   after the "asm(" token (you should have "asm(pgrmHELLO" or whatever you called
+   it), and then press [ENTER] to run the program, and then you should see this:
+
+   |Hello World!
+   |            Done
+
+   The "Done" indicator is output after a program is done to let you know when
+   it is done running...Well that was quite a long explaination; you better get
+   used to this procedure, because I will not tell you how to do it again :-)
+
+  +--------------------+
+  | Parts of a program |
+  +--------------------+
+
+   The preprocessor is a special part of the compiler that looks through your
+   code and makes changes according to the preprocessor commands that it finds.
+   finds. Preprocessor commands are commands to the preprocessor that tell it
+   how to modify the code (is there an echo in here?), and all preprocessor
+   commands start with the '#' character (and with NO WHITESPACE AFTER IT).
+
+   The eof command is a preprocessor command that tells the compiler to ignore
+   anything else in the file after that point. This is usually pointless, but due
+   to some weird bug that I cannot quite resolve, sometimes the compiler tries to
+   read past the end of the file (this seems to happen sometimes if all you have
+   is a bunch of preprocessor commands). This is rare, so you can just leave it
+   out all the time; however, if for some reason the compiler keeps giving you
+   an "Unexpected end of file found" error for no reason, it might help to put
+   #eof at the end of your code (it cannot hurt to have it all the time though).
+
+   The define command is a preprocessor command that can be used to do a few
+   different things. When you put an identifier after it, it simply remembers
+   that that identifier is "defined" (this has a use with other preprocessor
+   commands that I will get to later). An identifier is any series of characters
+   that you want that are either letters, the '_' character, or digits (though
+   an identifier cannot BEGIN with a digit). If you define one of the special
+   identifiers that corresponds to a graphing calculator model/platform, it ALSO
+   tells the compiler (preprocessor actually) that your code is supposed to be
+   compiled for that platform. You can define as many platforms as you want your
+   code to compile for and in any order that you want (though it will always
+   compile in order from the TI-82 to the TI-86). Here is an example that defines
+   all of the valid platforms (and shows you all of the platform identifiers):
+
+   |#define TI82
+   |#define TI83
+   |#define TI83_PLUS
+   |#define TI83_PLUS_SE
+   |#define TI84_PLUS
+   |#define TI84_PLUS_SE
+   |#define TI85
+   |#define TI86
+
+   You can use one define command to define more than one identifier by listing
+   them all after the define command, separated by commas. For example:
+
+   |#define TI82, TI83, TI83_PLUS, TI86
+
+   DEFINING WHICH PLATFORM(S) TO USE SHOULD COME BEFORE ANYTHING ELSE IN ANY
+   PROGRAM! (This just makes sure that anything else in the background knows
+   ahead of time which platform(s) you are using, since a good deal of things
+   are platform dependant. My SquirrelBox compiler should actually figure it
+   out just fine if you do it later, but this just makes it fail-safe and is a
+   good practice anyways because not only does it let people know right away
+   which platform(s) are baing used, but other things that you define will NOT
+   be picked up until AFTER you define them; so in general, anything that needs
+   to be defined (especially for external things to check for) should be defined
+   as early as possible)
+
+   Important: all models from the TI83+ to the TI84+SE are in the TI83+ series,
+   which means that they are all versions of the TI83+. If you were to compile
+   something for the TI83+, it will also run on the TI83+SE, TI84+, and TI84+SE.
+   This is very important to know because anything declared to compile for the
+   TI83+ will also compile for anything in the TI83+ series that was defined.
+   More specifically, code declared to compile for any platform in the TI83+
+   series also compiles for anything else in the TI83+ series that were defined
+   from that model on up (the order from least to greatest was already stated
+   above, and starts with the TI83+). Thus, if you want something to compile
+   for the whole TI83+ series, refer to TI83_PLUS; but if you want something to
+   only compile for the TI84+ on up, refer to TI84_PLUS (there are features and
+   stuff in some of the higher models that are not in the lower models, so some
+   things only work on some of the higher models in the series).
+
+   ...wait a minute, if it is so important to define a platform, then why isn't
+   one defined in that code you ask? Well actually it is. I made an include file
+   that outputs the correct assembly header for TI83+ programs and automatically
+   goes "#define TI83_PLUS" for you. Since it defines TI83_PLUS for you, it is
+   very important to include it before anything else if you are going to use it.
+
+   The include command is another preprocessor command that tells the compiler
+   to "include" the code of another source file in your code. When you include
+   another file, it is as if all the text in that file is inserted into your code
+   at the place where it was included. For example, if you had a file called
+   "file-A.ads" that had this:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |byte[13] message = {"Hello World!",0};
+
+   ...and you compiled a file that looked like this:
+
+   |#include "file-A.ads"
+   |void main() {
+   |    .HomeUp();
+   |    .ClrHome();
+   |    .DispS(message);
+   |}
+
+   ...the compiler would treat your code as if it looked like this:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |byte[13] message = {"Hello World!",0};
+   |void main() {
+   |    .HomeUp();
+   |    .ClrHome();
+   |    .DispS(message);
+   |}
+
+   This is the main reason for creating asn using "include files" (guess how they
+   got that name?); to save reusable code in a file so that you can reuse pieces
+   of it anywhere else (though usually you would use them to define functions or
+   macros or something like that instead of jsut using them so that you can be
+   lazy about putting the same old stuff at the top of your program). Note: when
+   using the SquirrelBox compiler, all included files must be open (usually a
+   compiler will link included files via file I/O, but things got a little messy
+   and this way was jsut easier for me to work with when I made SquirrelBox).
+
+   In languages like "TI-BASIC", a program consists of a series of instructions
+   that are executed in order when the program runs. In most modern programming
+   langauges though, a program consists of a series of modules, and each module
+   consists of a series of instructions that are designed to accomplish some
+   task. Modules are called different things in every language, there does not
+   seem to be a standard: [sub]routines (Assembly, Basic), functions (C or C++),
+   methods (Java), procedures (Pascal), and so on. In Antidisassemblage, modules
+   are called functions. Every Antidisassemblage program has a "main" function,
+   which is where execution of the program starts (any other functions in your
+   program are only ever executed unless you call them from the main function).
+
+   When you run the example program from before, the statements contained in
+   the main function are exectued in the order that they appear (left to right,
+   top to bottom). A "statement" means one whole instruction or command (think
+   of it as a complete sentence like "walk the dog" or "clear the home screen").
+   Every statement must end with a semicolon ';' (this is how the compiler can
+   tell one statement from another) (NOTE: preprocessor commands do NOT end with
+   semicolons and neither do control-structures and function-bodies) Just to make
+   things a little easier as I refer back to it, here is that same program again:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte[13] message = {"Hello World!",0};
+   |
+   |void main() {
+   |    .HomeUp();
+   |    .ClrHome();
+   |    .DispS(message);
+   |}
+
+   The main function contains three statements: HomeUp(), ClrHome(), and Disp(
+   message). HomeUp() sets the cursor position to the upper left corner of the
+   home screen (the TI-83+ homescreen has 8 rows and 16 columns; the coordinate
+   system for the cursor is {row, column} with a range of {0-7,0-15} where {0,0}
+   is the upper-leftmost position). ClrHome() clears the home screen (like the
+   TI-BASIC command except that it does not reset the cursor position, which is
+   why I called HomeUp() just before it). DispS(message) displays an array of
+   thirteen bytes that I named "message" as a string (note the 'S'). These are
+   all defined in an include file that I made called "text.ads" (which is why
+   it is included at the top).
+
+   A "string" is a series of characters surrounded by double quotes (but the
+   quotes are not actually part of the string, so when I said that DispS(...)
+   displays an array as a string, I did not mean with quotes around it). For now,
+   this is how you declare a string variable (actually there are not any string
+   variables, but this explaination will do for now):
+
+   |byte[size] name = {"text",0};
+
+   Where size is one more than the number of characters in the string, name is
+   whatever you want to name it (any valid identifier), and text is any series
+   of characters that you want. DO NOT FORGET THE ZERO (this is how the z80 can
+   tell where the string ends). It sais byte to denote that this variable is a
+   byte, but the [...] means that it is an array of [size] many bytes. Since it
+   is an array you can only initialize it with an array value...I will go over
+   strings and arrays more later. Some more examples:
+
+   |byte[4] moo = {"moo",0};
+   |byte[6] moose = {"moose",0};
+   |byte[1] empty = {"",0};
+   |byte[7] zeros = {"000000",0};
+
+   All of those commands in main are macros, which are like commands that can
+   be made to look one one thing but do something that is defined somewhere else.
+   When you define a macro, you get to decide how it looks, where you can give
+   things to it, and the actual code that it represents and what to do with the
+   anything that it is given. A Macro is actually just a more complex version
+   of a simple replacement, so I will explain how a simple replacement works.
+   The syntax for a simple replacement is:
+
+   |#define "alias" as "something else"
+
+   Where the first string is an "alias" for the second string. For example, if
+   you were to define "text1" as "text2", then whenever the preprocessor finds
+   "text1", it will pretend that it says "text2" (ignoring the quotes). For
+   example (though what I am about to show you is not good practice at all and
+   is not the way that it was meant to be used) you could do this:
+
+   |#dinclude "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |#define "Begin" as "void main() {"
+   |#define "End" as "}"
+   |
+   |byte[13] message = {"Hello World!",0};
+   |
+   |.Begin
+   |.HomeUp();
+   |.ClrHome();
+   |.DispS(message);
+   |.End
+
+   So that ".Begin" gets replaced with "void main() {" and ".End" gets replaced
+   with "}", so that it is as if you had typed it that way. Macros work in the
+   same way, except that before the "as" there can be multiple things in qutoes
+   and place-holders for various inputs, and after the "as" it can have multiple
+   replacements and mark where to use any of the inputs; defining macros can be
+   somewhat complicated and messy, but it is not really an important to know how
+   to do unless you are doing some crazy assembly stuff (macro-defining is mainly
+   only part of the language so that assembly stuff can be added to the language
+   in the form of easy to use commands so that people can have access to various
+   assembly things without having to know anything about the assembly language).
+
+   I think that I owe you an explaination for the dot. Replacements and macros
+   always have a dot '.' in front of them when they are used. This makes it easy
+   to see where such things are used so that you do not mistake them for actual
+   working code and/or get confused about where they came from (as you will see
+   later, this convention with the parenthesis would make it very easy to mistake
+   a macro with a function call if there was no dot). This also makes it so much
+   easier for the preprocessor to find all of the replacements, which makes the
+   compilation process MUCH faster than it would otherwise have to be (it would
+   have to constantly look for every possible replacement between everything).
+
+  +-----------------+
+  | Formatting info |
+  +-----------------+
+
+   Antidisassemblage is a free-form language, which means that you can format
+   your code however you want (you can put as much whitespace where-ever you
+   want in your code because all whitespace is ignored with the exception that
+   it can separate things). Whitespace is any character that is used for spacing
+   or formatting (i.e. space, tab, the end-of-line or carraige-return character).
+   For example, you could format your code like this:
+
+   |#include "ti83plus.ads" #include "text.ads"
+   |byte [ 13 ] message = { "Hello World!" , 0 }        ;
+   |
+   |void main ( )
+   |{ .HomeUp(       );
+   |  .ClrHome  ();
+   |  .DispS( message) ; }
+
+   Or like this:
+
+   |#include"ti83plus.ads"#include"text.ads"byte[13]message={"Hello World!",0}
+   |;void main(){.HomeUp();.ClrHome();.DispS(message);}
+
+   Though both of those formats are harder to read, they will all compile just
+   the same. It is a good idea though to format your code in a way that makes
+   sense so that your code is easier to read (and thus easier to understand).
+   It really does make a difference, and I can give you a good example of some-
+   one I knew from a C++ course that I took who had the worst time trying to
+   learn the language and excel in the course simply because he would not learn
+   to format his code because he supposed that it was a waste of time and file
+   space since it would all compile just the same (eventually he gave up on the
+   course and dropped out, while other people in this group that he was always
+   working with were not any smarter or better than he was at learning and
+   figuring out algorithms did excel and they made it through the class).
+
+   Comments are text in your code that are completely ignored by the compiler
+   as if they are not even there. Their only purpose is so that you can put
+   commentary statements in your code. It is good practice to put comments in
+   your code to say what it does and what various things in your code are for
+   or what they do. Antidisassemblage supports the same commenting style as
+   C++ and Java ("slash-slash" and "slash-star" style comments). Slash-slash
+   comments comment-out the rest of the text on a line. Slash-Star comments
+   comment-out all of the code after them until a star-slash is found. For
+   example, you might comment your code like this:
+
+   |/* Hello.ads, by Joe Shmo
+   | *
+   | * This program simply clears the screen and displays
+   | * the message "Hello World!" at the top of the screen
+   | */
+   | 
+   |#include "ti83plus.ads" // compile for the TI-83+
+   |#include "text.ads"     // has various text commands
+   |
+   |byte[13] message = {"Hello World!",0}; // the output message
+   |
+   |void main() {        // the main function; execution starts here 
+   |    .HomeUp();       // reset the cursor position to {0,0}
+   |    .ClrHome();      // clear the home screen
+   |    .DispS(message); // display the message
+   |}
+
+   I would not comment my code THAT heavily, but comments never hurt. Notice
+   the formatting style used for the slash-star comment at the top; the stars
+   ("asterisks") running down the left side is just a preference of style; the
+   comment ends at the "*/" (this particular formatting choice with the stars
+   like that is very typical of Java programmers; C++ programmers usually just
+   put "/*" on its own line and then have the comments all along the left edge
+   and then have the "*/" at the bottom; you can format it however you want).
+   
+   I have chosen to use a C++/Java -like syntax for Antidisassemblage. Java and
+   C++ use the same syntax, but typically have different formatting styles. For
+   example, C++ programmers tend to put the starting bracket '{' of functions
+   and other things on a new line rather than after the function delcaration,
+   and Java programmers tend to format their code as I have done (actually, I
+   think that it is more of a GNU standard vs. an ANSI standard of formatting).
+
+   Though my choice of syntax makes C++ and Java programmers happy, Adsmblg is
+   for TI graphing calculators and many people would agree that I should have
+   chosen a syntax that is similar to TI-Basic (after all, one of my goals in
+   making all of this is to encourage TI-Basic programmers to make assembly-
+   quality programs from a high-level environment that is some-what similar to
+   what they are used to). Though I have decided that the C++/Java syntax is
+   better and I should not deny it to all you other C++/Java programmers, there
+   is an alternate syntax for some things that is more similar to TI-Basic.
+
+   So far the only thing I have covered that contains its own block of code is
+   a function (control-constructs also contain blocks of code that they control,
+   but I will cover them later). These "blocks of code" (no, I could not think
+   of a better name) are all contained within braces ('{' and '}'). The alternate
+   syntax is to replace '{' and '}' with "begin" and "end" (or you can leave them
+   off completely if the whole block consists of only one thing, which can even
+   be something with its own block of code like a control-structure). For example,
+   the same example program that I have been using could be coded like this:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte[13] message = {"Hello World!",0};
+   |
+   |void main()
+   |begin
+   |.HomeUp();
+   |.ClrHome();
+   |.DispS(message);
+   |end
+
+   I decided to put everything against the left edge this time to illistrate
+   how much more like TI-Basic it can look (well, those peranthesis and dots
+   everywhere do distinguish it, but whatever); but it is still good practice
+   to indent all blocks of code further in from the thing that contains them
+   because that makes code much easier to read (if you do not have each block
+   block indented it is easy to overlook something like void main() as some-
+   thing that contains the following block of code and mistake it for just an
+   other line of code; but compare it to this):
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte[13] message = {"Hello World!",0};
+   |
+   |void main()
+   |begin
+   |    .HomeUp();
+   |    .ClrHome();
+   |    .DispS(message);
+   |end
+
+   One more thing that you should know is that Antidisassemblage is a case-
+   sensetive language which means that "upper-case" and "lower-case" letters
+   are treated completely different. For example, #DEFINE or #Define would
+   cause an error because they do not mean anything though #define would not.
+   This also means that if you name something test and refer to it as Test,
+   the compiler will not know what you are reffering to (unless there is some-
+   thing else called Test which would be completely valid since it is not the
+   same as test).

@@ -1,0 +1,131 @@
+Last modified: 13 May 2005
+
+==============
+5. Indirection
+==============
+
+  +-------------+
+  | Indirection |
+  +-------------+
+
+   Indirection (or indirect access) is a way of accessing data that is stored in
+   any given address, which is very important if you want to be able to work with
+   arrays or files or any other low-level thing. For example, here is a function
+   that sorts an array of any size up to 256 in ascending order using a "bubble-
+   sort" algorithm:
+
+   |void sort(word &array, byte size) {
+   |    byte front = 0;
+   |    while(first+1 < size) {
+   |        byte end = first+1;
+   |        while(end < size) {
+   |            if(*(array+end) < *(array+front)) {
+   |                byte temp = *(array+front);
+   |                *(array+front) = *(array+end);
+   |                *(array+end) = temp;
+   |            }
+   |        }
+   |    }
+   |}
+
+   (It compares the first value to all the other values and swaps them when the
+   end value is greater, and it loops the front value through the list. This is
+   not the most efficient method, but it is very simple to understand and make).
+
+   First I would like to point out that I used that low-level method of indexing,
+   but it is not quite the same. If you remember, the syntax is *(&array + index),
+   but I omitted the address operator (&), so what it is doing is adding the index
+   to the VALUE of that "array" variable and then dereferencing it. An alternate
+   way to do it would be to go (*array)[index], which dereferences the array and
+   then indexes it. This is NOT the same as *array[index] because array-indexing
+   is resolved before dereferencing (if you want to get technical, this is even
+   before the implied dereferencing of the variable address which occurs by defualt
+   since you usually want the value of a variable; the & operator just cancels it
+   out). *array[index] refers to array[index] dereferenced while (*array)[index]
+   refers to an array index of {array dereferenced}. It is like you are using an
+   array of "pointers" (addresses to other things), or a "pointer" to an array.
+
+   Notice that this function does not return a value. This is because the data in
+   the array is manipulated where-ever it is, or indirectly (hence "indirection").
+   The beauty of it is that you can give it the address of an array of any size.
+
+   Also, notice the address symbol "&" before the "array" argument. This tells the
+   compiler to force it in front of anything that you pass to that argument. Do this
+   when you need to take the address of something (like an array) so that it cannot
+   accidentally be given something like 52964, which may be the address of some-
+   thing important (I do not know if it is, I made the number up) (it is invalid to
+   take the address of a number, so this also works like an error-trap to let you
+   know when it is used incorrectly). Here is one more simple example:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |word a,b,c;
+   |byte d = '@';
+   |
+   |void show() {
+   |	byte char = ***a;
+   |	.DispC(char);
+   |	char = **b;
+   |	.DispC(char);
+   |	char = *c;
+   |	.DispC(char);
+   |	.DispC(d);
+   |	.NewLine();
+   |}
+   |
+   |void main() {
+   |	c = &d;
+   |	b = &c;
+   |	a = &b;
+   |	.HomeUp();
+   |	.ClrHome();
+   |	show();
+   |	d = '&';
+   |	show();
+   |	*c = '#';
+   |	show();
+   |	***a = '%';
+   |	show();
+   |	**b = '$';
+   |	show();
+   |}
+
+   This program "chains" several variables together (a is a reference to b, b is a
+   reference to c, and c is a referece to d; or you could say that c points to d
+   or that it is a pointer to d). When the value of d is changed, you can see the
+   change though all the references. Changing *c changes d, changing ***a changes d,
+   etc. If you compile and run this program on the TI83+, you can see that the char
+   that is uses for the '$' ASCII character is not '$', but is a little 4 (as in to
+   the fourth power). Actually, this program is among the other test programs that
+   are in the programs folder in "SquirrelBox 1.3.zip"
+
+   One very important thing that you should know is that addresses in z80 take up
+   two bytes, which is why a, b, and c in the program above are word variables.
+   If you try to dereference a byte, the compiler is smart enough to throw in a
+   zero for the MSB, but if you dereference a reference (i.e. **d), then it uses
+   a word value by default. This means that if you point a byte to a byte to a byte,
+   it will actually grab the next value in memory when you dereference (it does not
+   know what you are trying to reference). To get around this, you can cast each
+   reference i.e. *(byte)(*(byte)(*(byte)something))), though that most inner cast
+   is pointless if "something" is already a byte variable. It can go the other way
+   too i.e. *(word)something if something is a byte variable (do not try it though).
+   Generally though you should use words for referencing. Any time you see "word &"
+   you should think of it as a reference or "pointer" argument.
+
+==========
+Conclusion
+==========
+
+   These tutorials were made before any real include files were made for the
+   language; if any develop and become popular, people can document them or
+   write tutorials for them or whatever, but this is all that I will put in my
+   tutorials because they are for the base of the language that never changes.
+
+   There is one more section to read that covers the features of the langauge
+   that are built into it to allow people to use assembly code and define macros
+   and stuff, which are mostly meant to be used in the background to externally
+   add to the base language and customize it in various ways. I put this short
+   conclusion here though because I have covered pretty much everything that you
+   need to know, unless you want to develop extra things to expand the language
+   with all that assembly stuff (and other things) mentioned in the next section.

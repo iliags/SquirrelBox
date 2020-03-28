@@ -1,0 +1,262 @@
+Last modified: 14 May 2005
+
+=====================
+3. Control structures
+=====================
+
+  +--------------+
+  | Program Flow |
+  +--------------+
+
+   At this point you should know enough to make any kind of linear program. By
+   "linear" I mean that all of the instuctions in a program will be executed in
+   order from begininning to end, which is okay for simple math programs that
+   always do the exact same thing.
+
+   Control structures are devices that control the flow of a program ("program
+   flow") by allowing you to conditionally skip over or repeat blocks of code.
+   The simplest control structure the goto statement (actually it is more of
+   a command than a control structure, but this is a good place for it). The
+   syntax for a goto statement is "goto label;" where "label" is the name of
+   any label that is in the same function, and the syntax for declaring a label
+   is "label name;" where "name" is any identifier that you want (it can even
+   be anything that already has another use). For example, this program should
+   loop forever (so you might not want to try it):
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |void main() {
+   |    byte number = 0;
+   |    label repeat;
+   |    number = number + 1;
+   |    .DispByte(number);
+   |    goto repeat;
+   |}
+
+  +---------------------+
+  | condition execution |
+  +---------------------+
+
+   All control structures (with one exception) use conditional statements to
+   decide what to do. In Antidisassemblage, conditions are nothing more than
+   a comparison between two expressions (sorry, no "and" and "or" operators).
+   There are _ comparison operators: '<', '>', "==", "!=", "<=", ">=", "!<",
+   and "!>" ("!<" and "!>" are the same as ">=" and "<=" respectively). The
+   '!' in some of them stands for "not"; everything else should be obvious.
+
+   Note: do not confuse the equal-to operator with the assignment operator.
+
+   The "if" control structure causes a block of code to only execute when a
+   condition is met. The syntax for an if statement is:
+
+   |if(comparison) {
+   |    block1
+   |}
+   |else {
+   |    block2
+   |}
+
+   where comparison is any comparison, "block1" and "block2" are any amount of
+   code that you want to put there, and the "else" part is optional. When the
+   comparison is true, the code for "block1" will be executed and the code for
+   "block2" will be skipped (if you put the else part in). If the condition is
+   false, block1 is skipped and block2 is executed. Think of it as "if this is
+   true, do this, or else do this".
+
+   I made the "goto-if" statement as an alternative to going "if(comparison)
+   goto label", which generates poor assembly code ("if" uses its own invisible
+   "goto-if" statement to goto the end of the if statement when the comparison
+   is false). The syntax for a goto-if statement is:
+
+   |goto label if(comparison);
+
+   (You can tell it apart from separate "goto" and "if" statements by whether or
+   not there is a semicolon between them, so do not forget to put the semicolon
+   between a goto and an if unless you mean to make a goto-if statement).
+
+   FYI, going "if(comparison) goto label" has the same effect as doing this:
+
+   |goto end if(comparison);
+   |goto label;
+   |label end;
+
+   Note: you can simulate any control structures with a combination of gotos and
+   goto-ifs; the control-structures are just there to handle this kind of stuff 
+   for you so that you do not have to mess with labels and gotos all over the
+   place (which does not look very nice and makes it harder to match things up).
+
+   Similar to goto-if, there is also return-if, continue-if, and break-if, which
+   all are more efficient than using an if before them. You will learn what break,
+   continue, and return mean further down.
+
+  +---------+
+  | Looping |
+  +---------+
+
+   Control structure that cause code to be executed more than once are called
+   loops. Loops are very imporant because they allow programs to do a similar
+   task many times using the same code (as opposed to having 50 statements to
+   display 50 things).
+
+   A "while" loop loops "while" a condition is true, and an "until" loop loops
+   "until" a condition is true (or while it is false). For example, here is a
+   program that loops until you press the Alhpa key:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte Alhpa = 31;
+   |byte[4] no = {"No, ",0};
+   |byte[13] pressAlpha = {"Press ALPHA!",0};
+   |
+   |void main() {
+   |    .HomeUp();
+   |    .ClrHome();
+   |    .DispS(pressAlpha);
+   |    while(getKeyPress() != Alpha) {
+   |        .NewLine();
+   |        .DispS(no);
+   |        .DispS(pressAlhpha);
+   |    }
+   |}
+
+   The runtime output would look something like this:
+
+   |press Alpha!
+   |No, press Alpha!
+   |No, press Alpha!
+   |No, press Alpha!
+   |            Done
+
+   Note: getKeyPress() is not anything real, I made it up for the example.
+   There is nothing built into the language to get keypresses, but I am sure
+   there are plenty of assembly routines and Rom calls for it (a good example
+   of something that somebody should make some macros of functions for).
+
+   That while loop makes it possible for that part of the program to repeat
+   any number of times. This is what I mean by a non-linear program. That code
+   loops while the key press is not Alpha, but I could have written it to loop
+   until the key press is Alpha ("until(getKeyPress() == Alpha)"), which really
+   is the same thing (it is just a matter of how you want to think of it) (the
+   key-code for the Alpha key on the TI-83+ is 31. Perhaps somebody should make
+   an include file that defines all the key-codes for the different platforms). 
+
+   A do-while or do-until loop is used in place of a while/until loop when you
+   want everything in the loop to be executed at least once no matter what. Use
+   do-while or do-until loops whenever you can because the assembly code that
+   they generate is much more efficient than what while and until loops generate
+   (they jump back up to the top from the bottom, and when the condition does
+   not pass at the top it jumps back down to the bottom to break from the loop;
+   do loops simply jump back up to the top when the condition passes). Here is
+   that same example program from before written using a do-while loop:
+
+   |#include "ti83plus.ads"
+   |#include "text.ads"
+   |
+   |byte Alhpa = 31;
+   |byte[13] pressAlpha = {"Press ALPHA!",0};
+   |
+   |void main() {
+   |    .HomeUp();
+   |    .ClrHome();
+   |    do {
+   |        .NewLine();
+   |        .DispS(pressAlhpha);
+   |    } until(getKeyPress() == Alpha);
+   |}
+
+   (Notice how the "Press ALPHA!" message is only displayed in one place). If
+   you look closely you should notice a semicolon ';' after the until part of
+   the loop; this is important because it helps to illistrate that it is part
+   of the do-loop and not the start of a new while or until loop.
+
+   The "break" and "continue" commands in a loop are like the "exit" and "next"
+   commands in a switch; they cause execution to "break" out of or "continue"
+   a loop (when you "continue" a loop, the rest of the statements in the loop
+   are skipped and then the loop repeats (or not) as normal).
+
+   Sometimes the the only reason to break a loop is something that is contained
+   somewhere way inside the loop; a common solution to this is to rig a loop to
+   loop forever and break out of it manually like this:
+
+   |while(1 == 1) {
+   |    ....
+   |    if(something) {
+   |        break;
+   |    }
+   |}
+
+   (If you have to do this, it is actually better to use a do loop because they
+   are more efficient). But creating an endless loop by using a dummy comparison
+   that is always true (or false) is inefficient because the condition still has
+   to be checked every time. An endless loop can be simulated more efficiently
+   with a label and a goto statement, and there's a control structure built into
+   the language that does just that. It is simply called "loop":
+
+   |loop {
+   |    ...
+   |} // an endless loop
+
+   Do not forget that anything that contains a block of code (control structures
+   and functions) can use the "{...}" or the "begin...end" syntax, or just leave
+   them both off altogether if it contains a single statement. Some Examples:
+
+   |while(condition)        |do begin                |do one_statement;
+   |begin                   |    ...                 |until(condition);
+   |    ...                 |    ...
+   |    ...                 |end while(condition);
+   |end
+
+   |if(condition)           |if(condition)           |if(condition)
+   |then                    |    one_statement;      |then
+   |    ...                 |else {                  |    ...
+   |    ...                 |    ...                 |    ...
+   |else begin              |    ...                 |end
+   |    ...                 |}
+   |    ...
+   |end
+
+   Pay attention to those special if-then-else cases. When you use the begin...
+   end syntax for an if-statement, "then" is used in place of "begin" and you do
+   not put an "end" before the "else" (if there is no "else" then you do put the
+   "end") (if you did put an "end" before an else, the compiler would think that
+   the "if" ends there and that the "else" is for some other outer "if"). An else
+   is handled like everything else though (you always put the whole "begin...end").
+
+   If you use do loop with the "begin...end" syntax, make sure that you put an
+   "end" before the "while" or "until". A "begin" must ALWAYS have an "end" some-
+   where after it (and I can say that because a "then" is not a "begin" now is it?)
+
+  +--------------------+
+  | Special conditions |
+  +--------------------+
+
+   The following keywords can be used in place of any condition/comparison: TRUE
+   FALSE SFLAG NSFLAG ZFLAG NZFLAG HFLAG NHFLAG PEFLAG POFLAG NFLAG NNFLAG CFLAG
+   NCFLAG. The TRUE and FALSE conditions obviously cause a condition to always be
+   true or false. The "FLAG" identifiers represent the corresponging assembly flags
+   and can be used to make the condition depend on a flag. The main purpose of these
+   identifiers is so that people can make macros that can be used in conditions and
+   to provide an easy way to check the flags after some operation. For example, it
+   might be a good idea to define "Set", "Bit", and "Test" macros to set/reset/check
+   system flags like so:
+
+   |#define "Set (",bit,flags,")" as @"SET ", @bit, @",(IY+", @flags, @")", TRUE
+   |#define "Reset (",bit,flags,")" as @"SET ", @bit, @",(IY+", @flags, @")", FALSE
+   |#define "Bit (",bit,flags,")" as @"SET ", @bit, @",(IY+", @flags, @")", ZFLAG
+
+   (Note: Assembly macros are explain in section "6. Advanced / Background")
+
+   So that you can set bits like "if(.Set(TrigDeg, TrigFlags)) { ... }" (which
+   would always be true) or test bits like "if(.Bit(TrigDeg, TrigFlags) { ... }"
+   (which will but true when the DEGREES mode is set on the TI-83+).
+
+   Also, if there a macro or something would affect more then one flag, you could
+   check whichever one you want like ".SomeMacro(); if(CFLAG) ...". You should also
+   be able to
+   put most assembly macros in conditions or anywhere else since they are ignored
+   (aside from that they output assembly code), so it might also be good to put a
+   defualt flag at the end of every macro because these "special conditions" are
+   IGNORED when they are found outside of a condition. See section 6 for information
+   on making assembly macros.
